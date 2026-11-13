@@ -243,6 +243,7 @@ export interface VetConsultationRequest {
   symptoms?: string[];
   reason: string;
   description: string;
+  photoUrl?: string;
   status: ConsultationStatus;
   assignedVet?: {
     name: string;
@@ -293,7 +294,8 @@ export interface WeatherInfo {
   managementTipsBn: string[];
   managementTipsEn: string[];
   lastUpdated: string;
-}
+  isSimulated?: boolean;
+  }
 
 // Notifications - Normalized Unified View Model
 export interface AppNotification {

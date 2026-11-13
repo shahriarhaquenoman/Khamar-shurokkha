@@ -1,11 +1,5 @@
-import {
-  signInAnonymously,
-  signOut as fbSignOut,
-  onAuthStateChanged,
-  User as FirebaseUser,
-} from 'firebase/auth';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { auth, db } from '../lib/firebase';
+import { supabase } from '../lib/supabase';
+import { normalizeBangladeshPhone, phoneLoginEmail } from '../lib/phone';
 import { Language } from '../types';
 
 export interface FarmerAccount {
@@ -40,105 +34,101 @@ export const DEMO_FARMER_ACCOUNTS: Record<string, FarmerAccount> = {
   },
 };
 
-const USER_SESSION_STORAGE_KEY = 'khamar_shurokkha_active_account';
+function toFarmerAccount(user: {
+  id: string;
+  created_at?: string;
+  updated_at?: string;
+  user_metadata?: Record<string, unknown>;
+}): FarmerAccount {
+  const metadata = user.user_metadata || {};
+  return {
+    uid: user.id,
+    displayName:
+      typeof metadata.display_name === 'string' ? metadata.display_name : 'খামারি',
+    phoneNumber:
+      typeof metadata.phone_number === 'string' ? metadata.phone_number : '',
+    preferredLanguage: metadata.preferred_language === 'en' ? 'en' : 'bn',
+    createdAt: user.created_at || new Date().toISOString(),
+    updatedAt: user.updated_at,
+    isDemo: false,
+  };
+}
+
+async function responseError(response: Response): Promise<Error> {
+  const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+  return new Error(payload?.error || 'The request could not be completed.');
+}
 
 export const authService = {
-  // Listen for real Firebase Auth state changes
-  subscribeToAuth(callback: (user: FarmerAccount | null) => void): () => void {
-    return onAuthStateChanged(auth, async (fbUser: FirebaseUser | null) => {
-      if (fbUser) {
-        try {
-          const userDoc = await getDoc(doc(db, 'users', fbUser.uid));
-          if (userDoc.exists()) {
-            const data = userDoc.data() as FarmerAccount;
-            callback(data);
-            return;
-          }
-        } catch (e) {
-          console.warn('Could not read user profile from Firestore:', e);
-        }
-
-        // Default profile if newly signed in
-        const fallback: FarmerAccount = {
-          uid: fbUser.uid,
-          displayName: fbUser.displayName || 'খামারি ভাই/বোন',
-          phoneNumber: fbUser.phoneNumber || '',
-          email: fbUser.email || undefined,
-          preferredLanguage: 'bn',
-          createdAt: new Date().toISOString(),
-          isDemo: false,
-        };
-        callback(fallback);
-      } else {
-        // Check if a demo session is currently active
-        const savedDemo = localStorage.getItem(USER_SESSION_STORAGE_KEY);
-        if (savedDemo && DEMO_FARMER_ACCOUNTS[savedDemo]) {
-          callback(DEMO_FARMER_ACCOUNTS[savedDemo]);
-        } else {
-          // Default to primary demo farmer for effortless advisor/testing experience
-          callback(DEMO_FARMER_ACCOUNTS['demo-rafiq']);
-        }
-      }
+  subscribeToAuth(callback: (user: FarmerAccount) => void): () => void {
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      callback(
+        session?.user
+          ? toFarmerAccount(session.user)
+          : DEMO_FARMER_ACCOUNTS['demo-rafiq']
+      );
     });
+    return () => data.subscription.unsubscribe();
   },
 
-  // Switch to or activate a Demo Account
   async selectDemoFarmer(demoKey: 'demo-rafiq' | 'demo-fatema'): Promise<FarmerAccount> {
-    try {
-      await fbSignOut(auth);
-    } catch (_) {}
-    const account = DEMO_FARMER_ACCOUNTS[demoKey] || DEMO_FARMER_ACCOUNTS['demo-rafiq'];
-    localStorage.setItem(USER_SESSION_STORAGE_KEY, demoKey);
-    return account;
+    await supabase.auth.signOut();
+    return DEMO_FARMER_ACCOUNTS[demoKey] || DEMO_FARMER_ACCOUNTS['demo-rafiq'];
   },
 
-  // Register or sign in real farmer via Firebase anonymous / phone
-  async signInFarmerWithProfile(
+  async signInFarmerWithPassword(phoneNumber: string, password: string): Promise<FarmerAccount> {
+    const normalizedPhone = normalizeBangladeshPhone(phoneNumber);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: phoneLoginEmail(normalizedPhone),
+      password,
+    });
+
+    if (error || !data.user) {
+      throw new Error('Invalid mobile number or password.');
+    }
+    return toFarmerAccount(data.user);
+  },
+
+  async registerFarmerWithPassword(
     displayName: string,
     phoneNumber: string,
-    preferredLanguage: Language = 'bn',
-    email?: string
+    password: string,
+    preferredLanguage: Language = 'bn'
   ): Promise<FarmerAccount> {
-    localStorage.removeItem(USER_SESSION_STORAGE_KEY);
-    const userCredential = await signInAnonymously(auth);
-    const uid = userCredential.user.uid;
-
-    const profile: FarmerAccount = {
-      uid,
-      displayName,
-      phoneNumber,
-      email: email?.trim() || undefined,
-      preferredLanguage,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      isDemo: false,
-    };
+    const normalizedPhone = normalizeBangladeshPhone(phoneNumber);
+    const response = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        displayName: displayName.trim(),
+        phoneNumber: normalizedPhone,
+        password,
+        lang: preferredLanguage,
+      }),
+    });
+    if (!response.ok) throw await responseError(response);
 
     try {
-      await setDoc(doc(db, 'users', uid), profile, { merge: true });
-    } catch (e) {
-      console.warn('Error saving farmer profile to Firestore:', e);
+      return await this.signInFarmerWithPassword(normalizedPhone, password);
+    } catch {
+      throw new Error('Account created. Sign in with your mobile number and password.');
     }
-
-    return profile;
   },
 
   async updateFarmerProfile(
-    uid: string,
-    updates: Partial<Pick<FarmerAccount, 'displayName' | 'phoneNumber' | 'email' | 'preferredLanguage'>>
+    updates: Partial<Pick<FarmerAccount, 'displayName' | 'preferredLanguage'>>
   ): Promise<void> {
-    if (uid.startsWith('demo_user_')) {
-      return; // Demo accounts are immutable
-    }
-    const ref = doc(db, 'users', uid);
-    await updateDoc(ref, {
-      ...updates,
-      updatedAt: new Date().toISOString(),
+    const { error } = await supabase.auth.updateUser({
+      data: {
+        ...(updates.displayName ? { display_name: updates.displayName.trim() } : {}),
+        ...(updates.preferredLanguage ? { preferred_language: updates.preferredLanguage } : {}),
+      },
     });
+    if (error) throw new Error('Profile could not be updated. Please try again.');
   },
 
   async signOut(): Promise<void> {
-    localStorage.removeItem(USER_SESSION_STORAGE_KEY);
-    await fbSignOut(auth);
+    const { error } = await supabase.auth.signOut();
+    if (error) throw new Error('Sign out could not be completed. Please try again.');
   },
 };

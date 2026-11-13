@@ -309,8 +309,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <AlertCircle className="w-3 h-3 text-amber-600 shrink-0 mt-0.5" />
                     <span>
                       {isBn
-                        ? 'ডেমো ও গভর্ন্যান্স প্রদর্শনী টুলস। প্রকৃত নিরাপত্তা ফায়ারবেস অথেন্টিকেশন দ্বারা নিয়ন্ত্রিত।'
-                        : 'Demo & governance tools. Real security is enforced via Firebase Auth & rules.'}
+                        ? 'ডেমো ও গভর্ন্যান্স প্রদর্শনী টুলস। প্রকৃত অ্যাকাউন্টের তথ্য ব্যক্তিগত Supabase স্টোরেজে সংরক্ষিত।'
+                        : 'Demo & governance tools. Real account data is stored in private Supabase storage.'}
                     </span>
                   </div>
 

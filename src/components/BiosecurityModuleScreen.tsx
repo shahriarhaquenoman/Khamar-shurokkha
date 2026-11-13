@@ -29,6 +29,8 @@ import {
 interface BiosecurityModuleScreenProps {
   farm: FarmProfile;
   ownerUid?: string;
+  records: Record<string, import('../services/biosecurityService').BiosecurityChecklistRecord>;
+  onSaveChecklist: (record: import('../services/biosecurityService').BiosecurityChecklistRecord) => void;
   lang: Language;
   answers: Record<string, AuditItemAnswer>;
   onAnswer: (domainId: string, response: AuditResponse) => void;
@@ -47,6 +49,8 @@ interface BiosecurityModuleScreenProps {
 export const BiosecurityModuleScreen: React.FC<BiosecurityModuleScreenProps> = ({
   farm,
   ownerUid = 'demo_user',
+  records,
+  onSaveChecklist,
   lang,
   answers,
   onAnswer,
@@ -194,6 +198,8 @@ export const BiosecurityModuleScreen: React.FC<BiosecurityModuleScreenProps> = (
           ownerUid={ownerUid}
           ownerName={farm.ownerName}
           lang={lang}
+          records={records}
+          onSaveRecord={onSaveChecklist}
         />
       )}
 

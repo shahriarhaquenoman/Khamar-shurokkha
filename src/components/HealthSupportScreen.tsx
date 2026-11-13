@@ -40,6 +40,7 @@ interface HealthSupportScreenProps {
   chatMessages?: KhamarBondhuMessage[];
   onUpdateChatMessages?: React.Dispatch<React.SetStateAction<KhamarBondhuMessage[]>>;
   onResetChatMessages?: () => void;
+  isDemoActive: boolean;
   isJudgeDemoActive?: boolean;
 }
 
@@ -58,6 +59,7 @@ export const HealthSupportScreen: React.FC<HealthSupportScreenProps> = ({
   chatMessages,
   onUpdateChatMessages,
   onResetChatMessages,
+  isDemoActive,
   isJudgeDemoActive = false,
 }) => {
   const isBn = lang === 'bn';
@@ -176,6 +178,7 @@ export const HealthSupportScreen: React.FC<HealthSupportScreenProps> = ({
           flocks={flocks}
           requests={requests}
           lang={lang}
+          isDemoActive={isDemoActive}
           onSubmitRequest={onSubmitRequest}
           presetAnimal={presetAnimal}
         />
@@ -190,6 +193,7 @@ export const HealthSupportScreen: React.FC<HealthSupportScreenProps> = ({
           messages={chatMessages}
           onUpdateMessages={onUpdateChatMessages}
           onResetMessages={onResetChatMessages}
+          isDemoActive={isDemoActive}
           isJudgeDemoActive={isJudgeDemoActive}
         />
       )}

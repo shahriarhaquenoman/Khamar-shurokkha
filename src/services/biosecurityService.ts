@@ -1,14 +1,3 @@
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  setDoc,
-  query,
-  where,
-} from 'firebase/firestore';
-import { db } from '../lib/firebase';
-
 export interface BiosecurityTaskItem {
   id: string;
   titleBn: string;
@@ -16,6 +5,19 @@ export interface BiosecurityTaskItem {
   category: 'hygiene' | 'access_control' | 'waste_management' | 'water_feed';
   descriptionBn: string;
   priority: 'critical' | 'high' | 'medium';
+}
+
+export interface BiosecurityChecklistRecord {
+  checklistId: string;
+  farmId: string;
+  ownerUid: string;
+  date: string;
+  itemsCompleted: string[];
+  totalItems: number;
+  scorePercent: number;
+  inspectorName: string;
+  notes?: string;
+  createdAt: string;
 }
 
 export const STANDARD_BIOSECURITY_TASKS: BiosecurityTaskItem[] = [
@@ -68,108 +70,3 @@ export const STANDARD_BIOSECURITY_TASKS: BiosecurityTaskItem[] = [
     priority: 'high',
   },
 ];
-
-export interface BiosecurityChecklistRecord {
-  checklistId: string;
-  farmId: string;
-  ownerUid: string;
-  date: string;
-  itemsCompleted: string[]; // IDs of tasks completed
-  totalItems: number;
-  scorePercent: number;
-  inspectorName: string;
-  notes?: string;
-  createdAt: string;
-}
-
-export const biosecurityService = {
-  // Get checklist for a specific farm on a specific date
-  async getDailyChecklist(
-    farmId: string,
-    ownerUid: string,
-    date: string = new Date().toISOString().split('T')[0]
-  ): Promise<BiosecurityChecklistRecord | null> {
-    const checklistId = `bio_${farmId}_${date}`;
-
-    // Read from Firestore if authenticated
-    try {
-      const snap = await getDoc(doc(db, 'biosecurityChecklists', checklistId));
-      if (snap.exists()) {
-        return snap.data() as BiosecurityChecklistRecord;
-      }
-    } catch (e) {
-      console.warn('Error reading biosecurity checklist from Firestore:', e);
-    }
-
-    // Check localStorage fallback for demo/offline
-    const cached = localStorage.getItem(`bio_check_${checklistId}`);
-    if (cached) {
-      try {
-        return JSON.parse(cached);
-      } catch (_) {}
-    }
-
-    return null;
-  },
-
-  // Save or update checklist
-  async saveDailyChecklist(
-    farmId: string,
-    ownerUid: string,
-    date: string,
-    completedItemIds: string[],
-    inspectorName: string,
-    notes?: string
-  ): Promise<BiosecurityChecklistRecord> {
-    const checklistId = `bio_${farmId}_${date}`;
-    const totalItems = STANDARD_BIOSECURITY_TASKS.length;
-    const scorePercent = Math.round((completedItemIds.length / totalItems) * 100);
-
-    const record: BiosecurityChecklistRecord = {
-      checklistId,
-      farmId,
-      ownerUid,
-      date,
-      itemsCompleted: completedItemIds,
-      totalItems,
-      scorePercent,
-      inspectorName,
-      notes: notes || '',
-      createdAt: new Date().toISOString(),
-    };
-
-    // Cache locally
-    localStorage.setItem(`bio_check_${checklistId}`, JSON.stringify(record));
-
-    if (!ownerUid.startsWith('demo_user_')) {
-      try {
-        await setDoc(doc(db, 'biosecurityChecklists', checklistId), record, { merge: true });
-      } catch (e) {
-        console.warn('Firestore write warning:', e);
-      }
-    }
-
-    return record;
-  },
-
-  // Get historical checklists for trend overview
-  async getRecentChecklists(farmId: string, ownerUid: string): Promise<BiosecurityChecklistRecord[]> {
-    const results: BiosecurityChecklistRecord[] = [];
-
-    try {
-      const q = query(
-        collection(db, 'biosecurityChecklists'),
-        where('farmId', '==', farmId),
-        where('ownerUid', '==', ownerUid)
-      );
-      const snaps = await getDocs(q);
-      snaps.forEach((d) => {
-        results.push(d.data() as BiosecurityChecklistRecord);
-      });
-    } catch (e) {
-      console.warn('Error listing biosecurity checklists from Firestore:', e);
-    }
-
-    return results.sort((a, b) => b.date.localeCompare(a.date));
-  },
-};

@@ -33,6 +33,10 @@ interface SettingsScreenProps {
   lang: Language;
   onLanguageChange: (newLang: Language) => void;
   farm: FarmProfile;
+  smsPrefs: SmsNotificationPreferences;
+  onSmsPrefsChange: (preferences: SmsNotificationPreferences) => void;
+  inAppNotifications: boolean;
+  onInAppNotificationsChange: (enabled: boolean) => void;
   isDemoActive: boolean;
   onLaunchDemo: () => void;
   onResetAllData: () => void;
@@ -43,12 +47,14 @@ interface SettingsScreenProps {
   onOpenWalkthrough?: () => void;
 }
 
-const SMS_PREFS_STORAGE_KEY = 'ks_sms_preferences_v1';
-
 export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   lang,
   onLanguageChange,
   farm,
+  smsPrefs,
+  onSmsPrefsChange,
+  inAppNotifications,
+  onInAppNotificationsChange,
   isDemoActive,
   onLaunchDemo,
   onResetAllData,
@@ -62,58 +68,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
   const [smsSavedToast, setSmsSavedToast] = useState(false);
-
-  const [inAppNotifs, setInAppNotifs] = useState(true);
-  const [smsPrefs, setSmsPrefs] = useState<SmsNotificationPreferences>(() => {
-    try {
-      const raw = localStorage.getItem(`${SMS_PREFS_STORAGE_KEY}_${farm.id}`);
-      if (raw) return JSON.parse(raw);
-    } catch {
-      // ignore
-    }
-    return {
-      phoneNumber: farm.ownerPhone || '',
-      isPhoneVerified: false,
-      smsOptInConsent: false,
-      categories: {
-        vaccinations: true,
-        deworming: true,
-        biosecurity: true,
-        regionalAlerts: true,
-        vetAppointments: true,
-      },
-      quietHoursEnabled: true,
-      quietHoursStart: '21:00',
-      quietHoursEnd: '06:00',
-      ivrVoiceInterest: false,
-      gatewayStatus: 'planned_demo',
-    };
-  });
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(`${SMS_PREFS_STORAGE_KEY}_${farm.id}`);
-      if (raw) {
-        setSmsPrefs(JSON.parse(raw));
-      } else {
-        setSmsPrefs((prev) => ({
-          ...prev,
-          phoneNumber: farm.ownerPhone || prev.phoneNumber,
-          isPhoneVerified: false,
-        }));
-      }
-    } catch {
-      // ignore
-    }
-  }, [farm.id, farm.ownerPhone]);
+  const inAppNotifs = inAppNotifications;
 
   const handleSaveSmsPrefs = (updated: SmsNotificationPreferences) => {
-    setSmsPrefs(updated);
-    try {
-      localStorage.setItem(`${SMS_PREFS_STORAGE_KEY}_${farm.id}`, JSON.stringify(updated));
-    } catch {
-      // ignore
-    }
+    onSmsPrefsChange(updated);
     setSmsSavedToast(true);
     setTimeout(() => setSmsSavedToast(false), 3000);
   };
@@ -233,7 +191,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             </div>
           </div>
           <button
-            onClick={() => setInAppNotifs(!inAppNotifs)}
+            onClick={() => onInAppNotificationsChange(!inAppNotifs)}
             aria-label={isBn ? 'অ্যাপ নোটিফিকেশন চালু বা বন্ধ' : 'Toggle in-app notifications'}
             className={`w-12 h-7 rounded-full transition-colors relative cursor-pointer ${
               inAppNotifs ? 'bg-emerald-700' : 'bg-slate-300'
@@ -257,7 +215,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               <input
                 type="tel"
                 value={smsPrefs.phoneNumber}
-                onChange={(e) => setSmsPrefs((p) => ({ ...p, phoneNumber: e.target.value, isPhoneVerified: false }))}
+                onChange={(e) => handleSaveSmsPrefs({ ...smsPrefs, phoneNumber: e.target.value, isPhoneVerified: false })}
                 placeholder="017XX-XXXXXX"
                 className="w-full min-h-[44px] px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono"
               />
@@ -316,10 +274,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                     type="checkbox"
                     checked={smsPrefs.categories[cat.key]}
                     onChange={(e) =>
-                      setSmsPrefs((prev) => ({
-                        ...prev,
-                        categories: { ...prev.categories, [cat.key]: e.target.checked },
-                      }))
+                      handleSaveSmsPrefs({
+                        ...smsPrefs,
+                        categories: { ...smsPrefs.categories, [cat.key]: e.target.checked },
+                      })
                     }
                     className="w-4 h-4 accent-emerald-700"
                   />
@@ -336,7 +294,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                 <input
                   type="checkbox"
                   checked={smsPrefs.quietHoursEnabled}
-                  onChange={(e) => setSmsPrefs((p) => ({ ...p, quietHoursEnabled: e.target.checked }))}
+                  onChange={(e) => handleSaveSmsPrefs({ ...smsPrefs, quietHoursEnabled: e.target.checked })}
                   className="w-4 h-4 accent-emerald-700"
                 />
                 <Clock className="w-4 h-4 text-slate-600" />
@@ -352,7 +310,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                 <input
                   type="checkbox"
                   checked={smsPrefs.ivrVoiceInterest}
-                  onChange={(e) => setSmsPrefs((p) => ({ ...p, ivrVoiceInterest: e.target.checked }))}
+                  onChange={(e) => handleSaveSmsPrefs({ ...smsPrefs, ivrVoiceInterest: e.target.checked })}
                   className="w-4 h-4 accent-emerald-700"
                 />
                 <Phone className="w-4 h-4 text-amber-700" />
@@ -389,8 +347,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               <CheckCircle2 className="w-4 h-4 text-emerald-700" />
               <span>
                 {isBn
-                  ? 'আপনার পছন্দ স্থানীয়ভাবে সংরক্ষিত হয়েছে (পরিকল্পিত/ডেমো মোড — কোনো আসল SMS পাঠানো হয়নি)।'
-                  : 'Preferences saved locally (Planned/Demo mode — no real SMS sent).'}
+                  ? 'পছন্দ আপনার অ্যাকাউন্টে সংরক্ষিত হয়েছে; কোনো SMS পাঠানো হয়নি।'
+                  : 'Preferences saved to your account; no SMS was sent.'}
               </span>
             </div>
           )}

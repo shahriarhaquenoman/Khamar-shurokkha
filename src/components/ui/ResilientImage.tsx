@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import useSWR from 'swr';
 import { ImageOff } from 'lucide-react';
+import { getPrivatePhotoUrl } from '../../lib/farmerApi';
 
 interface ResilientImageProps {
   src?: string;
@@ -20,13 +22,24 @@ export const ResilientImage: React.FC<ResilientImageProps> = ({
   fallbackLabel,
   fallbackIcon,
 }) => {
-  const [currentSrc, setCurrentSrc] = useState<string | undefined>(src || fallbackSrc);
+  const privatePath = src?.startsWith('farm-media://') ? src : null;
+  const { data: signedUrl } = useSWR(
+    privatePath ? `private-photo:${privatePath}` : null,
+    () => getPrivatePhotoUrl(privatePath as string),
+    { revalidateOnFocus: false, refreshInterval: 25 * 60 * 1000, shouldRetryOnError: false }
+  );
+  const requestedSrc = privatePath ? signedUrl : src;
+  const [currentSrc, setCurrentSrc] = useState<string | undefined>(requestedSrc || fallbackSrc);
   const [hasFailed, setHasFailed] = useState(false);
 
   useEffect(() => {
-    setCurrentSrc(src || fallbackSrc);
+    setCurrentSrc(requestedSrc || fallbackSrc);
     setHasFailed(false);
-  }, [src, fallbackSrc]);
+  }, [requestedSrc, fallbackSrc]);
+
+  if (privatePath && !signedUrl) {
+    return <div aria-label={alt} className={`animate-pulse bg-slate-100 ${containerClassName || className}`} role="img" />;
+  }
 
   const handleError = () => {
     if (fallbackSrc && currentSrc !== fallbackSrc) {

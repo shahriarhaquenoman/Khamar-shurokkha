@@ -607,10 +607,15 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             <CloudSun className="w-5 h-5 text-sky-700 shrink-0 mt-0.5" />
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-xs font-black text-sky-950">
-                <span>
-                  {weather.district.split('(')[0].trim()} · {toBanglaNum(weather.temp, lang)}°C
+              <span>
+                {weather.district.split('(')[0].trim()} · {toBanglaNum(weather.temp, lang)}°C
+              </span>
+              {weather.isSimulated && (
+                <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+                  {isBn ? 'নমুনা তথ্য' : 'Sample data'}
                 </span>
-                <span className="text-[11px] font-bold text-amber-800">
+              )}
+              <span className="text-[11px] font-bold text-amber-800">
                   ({isBn ? 'তাপমাত্রার চাপ:' : 'Heat stress:'} {weather.heatStressIndex})
                 </span>
               </div>
