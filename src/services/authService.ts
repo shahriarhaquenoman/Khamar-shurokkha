@@ -118,13 +118,32 @@ export const authService = {
   async updateFarmerProfile(
     updates: Partial<Pick<FarmerAccount, 'displayName' | 'preferredLanguage'>>
   ): Promise<void> {
-    const { error } = await supabase.auth.updateUser({
-      data: {
-        ...(updates.displayName ? { display_name: updates.displayName.trim() } : {}),
-        ...(updates.preferredLanguage ? { preferred_language: updates.preferredLanguage } : {}),
-      },
-    });
-    if (error) throw new Error('Profile could not be updated. Please try again.');
+    const profileUpdate: Record<string, string> = {};
+    if (updates.displayName !== undefined) {
+      const displayName = updates.displayName.trim();
+      if (displayName.length < 2 || displayName.length > 80 || /[\\u0000-\\u001f\\u007f]/.test(displayName)) {
+        throw new Error('Enter a name between 2 and 80 characters.');
+      }
+      profileUpdate.display_name = displayName;
+    }
+    if (updates.preferredLanguage !== undefined) {
+      if (updates.preferredLanguage !== 'bn' && updates.preferredLanguage !== 'en') {
+        throw new Error('Choose a supported language.');
+      }
+      profileUpdate.preferred_language = updates.preferredLanguage;
+    }
+    if (!Object.keys(profileUpdate).length) return;
+
+    const { data, error } = await supabase.auth.updateUser({ data: profileUpdate });
+    if (error || !data.user) throw new Error('Profile could not be updated. Please try again.');
+
+    const { error: profileError } = await supabase
+      .from('user_profiles')
+      .update({ ...profileUpdate, updated_at: new Date().toISOString() })
+      .eq('id', data.user.id)
+      .select('id')
+      .single();
+    if (profileError) throw new Error('Profile could not be updated. Please try again.');
   },
 
   async signOut(): Promise<void> {

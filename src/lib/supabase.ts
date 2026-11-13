@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '../types/database';
 
 const supabaseUrl = import.meta.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey =
@@ -9,7 +10,7 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error('Supabase public project configuration is missing.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey, {
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
   auth: {
     autoRefreshToken: true,
     detectSessionInUrl: false,

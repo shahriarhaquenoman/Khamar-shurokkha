@@ -1,14 +1,13 @@
 import { randomUUID } from 'node:crypto';
-import { createClient, type User } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js';
 import { normalizeBangladeshPhone, phoneLoginEmail } from '../lib/phone.ts';
+import type { Database, Json } from '../types/database';
 
-const STATE_BUCKET = 'khamar-user-data-v1';
-const MEDIA_BUCKET = 'khamar-private-media-v1';
+const MEDIA_BUCKET = 'farm-media';
 const MAX_STATE_BYTES = 1_800_000;
 const MAX_PHOTO_BYTES = 2_800_000;
 const signupAttempts = new Map<string, { count: number; expiresAt: number }>();
-let adminClient: ReturnType<typeof createClient> | undefined;
-let directGeminiUnavailable = false;
+let adminClient: SupabaseClient<Database> | undefined;
 
 export interface ApiResult {
   status: number;
@@ -24,7 +23,7 @@ function getAdminClient() {
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
   if (!url || !key) throw new Error('Supabase server credentials are unavailable.');
-  adminClient = createClient(url, key, {
+  adminClient = createClient<Database>(url, key, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
   return adminClient;
@@ -116,33 +115,17 @@ async function handleSignup(body: unknown, headers: Headers): Promise<ApiResult>
   return json(201, { created: true });
 }
 
-function stateObjectKey(userId: string) {
-  return `users/${userId}/app-state.json`;
-}
-
 async function handleState(method: string, user: User, body: unknown): Promise<ApiResult> {
-  const storage = getAdminClient().storage.from(STATE_BUCKET);
-  const objectPath = stateObjectKey(user.id);
+  const db = getAdminClient();
 
   if (method === 'GET') {
-    const { data, error } = await storage.download(objectPath);
-    if (error) {
-      const message = error.message.toLowerCase();
-      if (message.includes('not found') || message.includes('404')) {
-        return json(200, { state: null });
-      }
-      return json(503, { error: 'Farm data is temporarily unavailable.' });
-    }
-
-    try {
-      const state = JSON.parse(await data.text());
-      if (!state || typeof state !== 'object' || Array.isArray(state)) {
-        return json(503, { error: 'Farm data could not be read.' });
-      }
-      return json(200, { state });
-    } catch {
-      return json(503, { error: 'Farm data could not be read.' });
-    }
+    const { data, error } = await db
+      .from('farmer_app_state')
+      .select('state')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (error) return json(503, { error: 'Farm data is temporarily unavailable.' });
+    return json(200, { state: data?.state ?? null });
   }
 
   if (method !== 'PUT') return json(405, { error: 'Method not allowed.' });
@@ -157,18 +140,17 @@ async function handleState(method: string, user: User, body: unknown): Promise<A
     return json(413, { error: 'Farm data exceeds the storage limit.' });
   }
 
-  const { error } = await storage.upload(objectPath, Buffer.from(serialized), {
-    cacheControl: '0',
-    contentType: 'application/json',
-    upsert: true,
-  });
+  const { error } = await db.from('farmer_app_state').upsert(
+    { user_id: user.id, state: state as Json, updated_at: new Date().toISOString() },
+    { onConflict: 'user_id' }
+  );
   if (error) return json(503, { error: 'Farm data could not be saved. Please retry.' });
   return json(200, { saved: true, savedAt: new Date().toISOString() });
 }
 
 function parsePrivateMediaPath(value: string, userId: string): string | null {
   const path = value.startsWith('farm-media://') ? value.slice('farm-media://'.length) : value;
-  if (!path || path.includes('..') || path.startsWith('/') || !path.startsWith(`users/${userId}/`)) {
+  if (!path || path.includes('..') || path.includes('\\') || path.startsWith('/') || !path.startsWith(`${userId}/`)) {
     return null;
   }
   return path;
@@ -202,7 +184,7 @@ async function handleMedia(
     return json(413, { error: 'Choose a smaller photo.' });
   }
 
-  const objectPath = `users/${user.id}/${randomUUID()}.webp`;
+  const objectPath = `${user.id}/${randomUUID()}.webp`;
   const { error } = await storage.upload(objectPath, image, {
     cacheControl: '3600',
     contentType: 'image/webp',
@@ -275,6 +257,9 @@ function isEmergencyMessage(text: string): boolean {
 }
 
 async function generateFarmGuidance(messages: Array<{ sender: 'user' | 'assistant'; text: string }>, context: string, lang: 'bn' | 'en') {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) throw new Error('Gemini API_KEY is not configured.');
+
   const language = lang === 'bn' ? 'Bangla' : 'English';
   const system = [
     'You are Khamar Bondhu, a farm-care education assistant for small and medium farms in Bangladesh.',
@@ -284,38 +269,19 @@ async function generateFarmGuidance(messages: Array<{ sender: 'user' | 'assistan
     'Do not prescribe medicines, antibiotics, or dosages. For severe symptoms, trouble breathing, inability to stand, severe bleeding, suspected poisoning, difficult birth, or sudden deaths, urge immediate contact with a registered veterinarian and isolation when safe.',
     'Do not claim that any clinic, vet, weather feed, or advisory is live or verified unless the user supplied that fact.',
   ].join('\n');
-  const transcript = messages
-    .map((message) => `${message.sender === 'user' ? 'Farmer' : 'Khamar Bondhu'}: ${message.text}`)
-    .join('\n');
-
-  if (process.env.API_KEY && !directGeminiUnavailable) {
-    try {
-      const { GoogleGenAI } = await import('@google/genai');
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: messages.map((message) => ({
-          role: message.sender === 'assistant' ? 'model' : 'user',
-          parts: [{ text: message.text }],
-        })),
-        config: { maxOutputTokens: 800, systemInstruction: system, temperature: 0.35 },
-      });
-      if (response.text?.trim()) return response.text.trim();
-      directGeminiUnavailable = true;
-    } catch {
-      directGeminiUnavailable = true;
-    }
-  }
-
-  const { generateText } = await import('ai');
-  const result = await generateText({
-    model: 'google/gemini-3.8-flash',
-    system,
-    prompt: transcript,
-    maxOutputTokens: 800,
-    temperature: 0.35,
+  const { GoogleGenAI } = await import('@google/genai');
+  const ai = new GoogleGenAI({ apiKey });
+  const response = await ai.models.generateContent({
+    model: 'gemini-3.8-flash',
+    contents: messages.map((message) => ({
+      role: message.sender === 'assistant' ? 'model' : 'user',
+      parts: [{ text: message.text }],
+    })),
+    config: { maxOutputTokens: 800, systemInstruction: system, temperature: 0.35 },
   });
-  return result.text.trim();
+  const text = response.text?.trim();
+  if (!text) throw new Error('Gemini returned an empty response.');
+  return text;
 }
 
 async function handleChat(body: unknown, user: User): Promise<ApiResult> {
