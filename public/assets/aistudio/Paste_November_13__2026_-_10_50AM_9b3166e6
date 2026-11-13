@@ -1,0 +1,1255 @@
+# KHAMAR SHUROKKHA
+# WORLD-CLASS FARMER-FIRST PRODUCT TRANSFORMATION
+## Master Implementation Brief for Google AI Studio
+
+Act as a world-class product strategist, senior UX/UI architect, React/TypeScript engineer, livestock technology specialist, and farmer-centered digital product designer.
+
+You are working on the existing **Khamar Shurokkha** application.
+
+Your task is to transform its current farmer-facing experience into a practical, visually engaging, accessible and easy-to-operate digital farm protection and livestock management platform for Bangladeshi farmers.
+
+This is an improvement of an existing application, NOT a rebuild.
+
+You must inspect the actual existing project source before modifying it.
+
+Preserve its established project identity, core architecture, working features, existing services, data models and integrations wherever possible.
+
+Do not introduce unnecessary complexity.
+
+---
+
+# 1. PRODUCT VISION
+
+Khamar Shurokkha should work as a farmer's everyday digital companion.
+
+Its central purpose is to help farmers:
+
+- Understand what they need to do for their farm today.
+- Identify important farm-protection gaps.
+- Know which action should be done first.
+- Understand why an action matters.
+- Learn how to perform it through simple visual instructions.
+- Report whether the action was completed.
+- Request help when they cannot perform an action.
+- Access veterinary consultation and useful farm-health guidance.
+- Receive relevant disease and seasonal advisories.
+
+The most important user-facing question is:
+
+**"আজ আমার খামারে কী কী করণীয়?"**
+
+Every major design decision should support this question.
+
+The application must prioritize:
+
+1. Simplicity.
+2. Farmer understanding.
+3. Actionability.
+4. Contextual visual guidance.
+5. Relevant information.
+6. Trustworthy data.
+7. Mobile usability.
+
+The primary target users are Bangladeshi smallholder farmers, including people with limited digital literacy.
+
+Use Bengali-first, natural, everyday language.
+
+Keep necessary technical terminology in English only where it improves accuracy.
+
+Do not overwhelm farmers with too many screens, statistics, technical explanations or buttons.
+
+---
+
+# 2. HOME / TODAY'S FARM ACTIVITIES
+
+The existing application already uses the Dashboard as its default screen.
+
+PRESERVE THE EXISTING DEFAULT DASHBOARD ROUTE.
+
+Do not make Biosecurity Audit the default screen.
+
+Transform the Dashboard into the primary:
+
+**"আজকের খামারে করণীয়"**
+
+It must become the operational center of the entire application.
+
+## A. Welcome and farm identity
+
+Create a visually appealing, compact welcome section.
+
+Display:
+
+- Friendly Bengali greeting.
+- Farmer's name.
+- Farm name.
+- Upazila and district.
+- Total animal/flock information.
+- A contextual photograph or illustration showing a Bangladeshi farmer with farm animals.
+
+Avoid oversized hero sections that push important actions below the fold.
+
+## B. Today's most important action
+
+This must be the most prominent area of the Home screen.
+
+Heading:
+
+"আজ প্রথমে এই কাজটি করুন"
+
+Show one primary action at a time.
+
+The action card should contain:
+
+- Action title.
+- Priority indicator.
+- Simple reason explaining why it matters.
+- Relevant visual/image.
+- Expected time or deadline when available.
+- Assigned/responsible person where applicable.
+- Current action status.
+- One prominent CTA: "কাজটি শুরু করুন".
+
+Use the existing priority engine where appropriate.
+
+Priority ordering:
+
+1. Critical.
+2. Overdue.
+3. Due Today.
+4. Due Soon.
+5. High Priority.
+6. Upcoming.
+7. Routine.
+
+Do not classify all overdue tasks as critical.
+
+Do not invent priority scores or unsupported disease-risk percentages.
+
+## C. Next recommended activities
+
+After the primary action, show only the next two recommended activities.
+
+Each compact card should include:
+
+- Short Bengali action title.
+- Contextual illustration or icon.
+- Deadline.
+- Priority/status.
+- "বিস্তারিত দেখুন" CTA.
+
+Add a clear button:
+
+"সব কাজ দেখুন"
+
+This should open the complete Action Planner.
+
+Do not display every farm activity on the Home screen.
+
+## D. Today's activity progress
+
+Introduce a visually engaging activity-progress section.
+
+Suggested heading:
+
+"আজকের খামার সুরক্ষা কার্যক্রম"
+
+Example:
+
+"২ / ৩টি কাজ সম্পন্ন — ৬৭%"
+
+Use a beautiful progress ring, horizontal progress bar or similar visualization.
+
+The progress should increase when the farmer reports task or guided-step completion.
+
+Support:
+
+- Total eligible actions.
+- Completed actions.
+- Remaining actions.
+- Actions requiring help.
+- Daily or weekly progress.
+
+The percentage must describe only recorded activity progress.
+
+Never describe it as:
+
+- Farm safety percentage.
+- Disease-free percentage.
+- Verified biosecurity score.
+- Immunity percentage.
+
+Do not use incomplete tasks to shame the farmer.
+
+Use encouraging language such as:
+
+"ভালো, আজ আপনার ২টি কাজ সম্পন্ন হয়েছে।"
+
+If there are no activities:
+
+"আজ নতুন কোনো কাজ নির্ধারিত নেই। আপনার খামার নিয়মিত পর্যবেক্ষণ করুন।"
+
+Do not display fabricated activity data.
+
+## E. Relevant farm alerts
+
+Display only relevant and important alerts on Home.
+
+Examples:
+
+- Confirmed disease advisory relevant to the farmer's region and species.
+- Important seasonal preparedness alert.
+- Weather-related farm precaution.
+- Relevant preventive-care reminder.
+- Important new action generated from a valid advisory.
+
+Keep the alert section compact.
+
+Use a button:
+
+"সতর্কতার বিস্তারিত দেখুন"
+
+General DLS news and unrelated information must not occupy the main Home screen.
+
+---
+
+# 3. BIOSHIELD ACTION LOOP
+
+Retain BioShield as the core farm-protection framework.
+
+However, simplify its farmer-facing explanation.
+
+The previous Identify → Prioritize → Assign → Verify model must be changed.
+
+There must be NO mandatory second-person verification stage.
+
+Do not require the farmer to find another person to confirm task completion.
+
+The simplified farmer-facing BioShield Action Loop is:
+
+## STEP 1 — খুঁজে দেখি
+Internal concept: Identify
+
+Question:
+
+"খামারে কোথায় সমস্যা বা ঘাটতি আছে?"
+
+Identify a protection need through:
+
+- Farm audit.
+- Farmer observation.
+- Animal or flock records.
+- Preventive-care schedule.
+- Relevant verified advisory.
+- Environmental or seasonal preparedness information.
+
+Visual direction:
+
+A farmer observing a farm, using a simple checklist or inspection illustration.
+
+## STEP 2 — আগে কোনটি?
+Internal concept: Prioritize
+
+Question:
+
+"কোন কাজটি আগে করা জরুরি?"
+
+Prioritize actions according to:
+
+- Relevance.
+- Priority.
+- Urgency.
+- Due date.
+- Farm and species characteristics.
+- Available approved protocols.
+
+Visual direction:
+
+Clear priority cards showing which action should be done first.
+
+## STEP 3 — কাজ ঠিক করি
+Internal concept: Assign
+
+Question:
+
+"কে কাজটি করবেন?"
+
+Allow simple optional responsibility selection:
+
+- আমি নিজে করব।
+- পরিবারের সদস্য করবেন।
+- খামারকর্মী করবেন।
+
+Do not require multiple workers.
+
+Do not force responsibility assignment when it is unnecessary.
+
+Visual direction:
+
+A farmer selecting or assigning a farm activity.
+
+## STEP 4 — কাজ করি ও জানাই
+Internal concept: Act & Feedback
+
+Question:
+
+"কাজটি করেছেন? নাকি সাহায্য প্রয়োজন?"
+
+Allow the farmer to:
+
+- Start the work.
+- Follow the instructions.
+- Complete the activity.
+- Report that they need help.
+- Report that they cannot perform the activity now.
+- Report that the activity is not applicable to their farm, where appropriate.
+
+Visual direction:
+
+A farmer performing an actual farm activity and marking it complete.
+
+IMPORTANT:
+
+Remove the previous "Verify" stage completely from the farmer-facing workflow.
+
+Do not add:
+
+- Independent verifier selection.
+- Second-person confirmation.
+- Agree/disagree verification.
+- Mandatory re-audit for task closure.
+- Complex evidence approval workflow.
+
+A farmer's completion report should be sufficient to update their activity status.
+
+Use transparent wording such as:
+
+"আপনি কাজটি সম্পন্ন করেছেন"
+
+Do not call this independently verified.
+
+The system may retain basic completion information such as reported status, timestamp and optional notes. Do not make evidence upload mandatory.
+
+The purpose is to make actions easy, not to create a compliance bureaucracy.
+
+## Visual representation
+
+Create a visually attractive four-stage BioShield journey.
+
+Each stage must have:
+
+- A number.
+- Appropriate icon or illustration.
+- Short Bengali heading.
+- One explanatory line.
+- Clear active/completed/upcoming state.
+- A meaningful navigation action.
+
+Use responsive horizontal or vertical stepper layout.
+
+On Home, show a compact representation.
+
+Put the detailed explanation inside BioShield.
+
+Do not display a large technical diagram on the main Dashboard.
+
+---
+
+# 4. ACTION PLANNER AND STEP-BY-STEP TASK EXPERIENCE
+
+This is one of the most important components.
+
+Every farm action should be easy to understand and perform.
+
+When a farmer opens an action, show a visual task guide.
+
+Structure:
+
+### A. What should I do?
+
+Simple action title.
+
+### B. Why should I do it?
+
+A short explanation of the benefit or risk being addressed.
+
+### C. How should I do it?
+
+Provide short, sequential steps.
+
+Use approximately three to five steps where appropriate.
+
+Every step should have:
+
+- A short Bengali instruction.
+- Relevant illustration.
+- Simple language.
+- A checkbox or visual completion indicator where suitable.
+
+### D. Who will do it?
+
+Optional responsibility assignment:
+
+- Farmer.
+- Family member.
+- Farm worker.
+
+### E. Report the result
+
+Use three primary farmer responses:
+
+1. "কাজটি সম্পন্ন করেছি"
+2. "সহায়তা প্রয়োজন"
+3. "এখন করতে পারছি না"
+
+Add "আমার খামারে প্রযোজ্য নয়" where relevant.
+
+Do not make photo uploads mandatory.
+
+Do not require a second person to confirm.
+
+## Task statuses
+
+Keep backend task states simple and clear.
+
+Suggested states:
+
+- Not Started.
+- In Progress.
+- Farmer Reported Complete.
+- Help Needed.
+- Cannot Complete Now.
+- Not Applicable.
+
+The farmer-facing labels must be natural Bengali.
+
+## When farmer needs help
+
+When "সহায়তা প্রয়োজন" is selected:
+
+Show options such as:
+
+- খামার বন্ধু-কে জিজ্ঞেস করুন।
+- পশুচিকিৎসকের পরামর্শ নিন।
+- উপলব্ধ সরকারি Livestock Call Centre-এ যোগাযোগ করুন।
+
+Choose the appropriate route based on the action category.
+
+When "এখন করতে পারছি না" is selected:
+
+- Ask for a simple optional reason.
+- Suggest an alternative only when appropriate.
+- Keep the action visible where further attention is needed.
+- Do not mark it complete.
+- Do not shame the farmer.
+
+When a task is marked "Not Applicable":
+
+- Record the farmer's response.
+- Use a suitable review/eligibility rule if required.
+- Exclude it from eligible progress calculations only when genuinely non-applicable.
+- Do not silently delete it.
+
+---
+
+# 5. FARMER MOTIVATION AND LIGHT GAMIFICATION
+
+Use gamification to encourage consistent farm-care activities.
+
+Keep it simple and helpful.
+
+Possible elements:
+
+- Daily action progress.
+- Weekly completion progress.
+- Step-by-step activity completion.
+- Small milestone messages.
+- Positive encouragement.
+- Optional achievement badges for meaningful milestones.
+
+Examples:
+
+- "আজ ৩টির মধ্যে ২টি কাজ সম্পন্ন হয়েছে।"
+- "এই সপ্তাহে আপনার বেশিরভাগ নির্ধারিত কাজ সম্পন্ন হয়েছে।"
+- "দারুণ! আজকের কার্যক্রম শেষ।"
+
+Do not use:
+
+- Public leaderboards.
+- Negative competition.
+- Shame-based reminders.
+- Complex points systems.
+- Artificial safety scores.
+- Rewards that encourage farmers to mark tasks complete without doing them.
+
+Gamification must measure activity progress, not actual disease prevention outcomes.
+
+---
+
+# 6. FARMER CAPABILITY AND ACTION RELEVANCE
+
+Not every protocol is appropriate for every farm.
+
+The system must consider:
+
+- Farm type.
+- Animal species.
+- Farm size.
+- Relevant risks.
+- Available resources.
+- Farmer's ability to perform the action.
+- Availability of veterinary or extension support.
+
+Do not display a mandatory generic protocol list to every farmer.
+
+Before an action is shown, assess whether it is relevant to that farm.
+
+Examples:
+
+- Poultry biosecurity actions should not automatically appear on a cattle-only farm.
+- A vaccination reminder must be based on appropriate animal data and approved scheduling information.
+- A seasonal advisory must be relevant to the farmer's location and farm type.
+- A task requiring unavailable equipment should provide realistic guidance or support options.
+
+Do not invent alternative medical or technical instructions.
+
+The system must distinguish:
+
+- Applicable and actionable.
+- Applicable but needs support.
+- Not currently feasible.
+- Not applicable.
+
+Never lower a genuinely critical priority merely because the farmer cannot perform an action. Provide support or referral instead.
+
+---
+
+# 7. HEALTH SUPPORT CENTER — TWO MAIN SERVICES
+
+Create one easy-to-find main section:
+
+**স্বাস্থ্য সহায়তা**
+
+This section must contain exactly two clearly distinguished primary services.
+
+## SERVICE 1 — VETERINARY SERVICES
+
+Farmer-facing name:
+
+"পশুচিকিৎসা সেবা"
+
+Purpose:
+
+Help farmers locate registered veterinary practitioners, request consultations and arrange appointments through the platform where supported.
+
+### Veterinary directory
+
+Display actual registered veterinary practitioners only after appropriate verification.
+
+Profiles may contain:
+
+- Doctor's name.
+- Authentic professional photo, where authorized.
+- BVC registration number.
+- Verified professional qualification.
+- Area of service.
+- Relevant animal/species expertise.
+- Consultation method.
+- Available schedule.
+- Contact or appointment option.
+- Consultation fee, only when accurately known.
+
+Never invent a registration number, qualification, doctor identity or availability.
+
+Do not label a doctor "Verified" merely because a demo profile exists.
+
+Only show genuine professionals in the operational directory.
+
+Demo profiles must be clearly labelled as demo examples.
+
+### Verification and registration information
+
+Use an appropriate admin/management process to check practitioner credentials against available Bangladesh Veterinary Council registration information.
+
+Store:
+
+- Registration number.
+- Verification status.
+- Verification date.
+- Verification source.
+- Approved profile status.
+
+Do not imply that the application itself is an official licensing authority.
+
+### Appointment flow
+
+Create a simple, mobile-friendly appointment process:
+
+1. Choose a veterinarian.
+2. Select farm and animal.
+3. Describe the concern.
+4. Add an optional photograph if supported.
+5. Choose an actually available consultation method.
+6. Select an actually available appointment time, where supported.
+7. Submit appointment request.
+8. Display request status.
+
+Possible statuses:
+
+- Request Submitted.
+- Awaiting Doctor Response.
+- Confirmed.
+- Rescheduled.
+- Cancelled.
+- Completed.
+
+A submitted request is NOT a confirmed appointment.
+
+Do not fabricate availability or successful bookings.
+
+### Call support
+
+Where the phone number is a real and current official contact, provide a click-to-call button.
+
+Include the Department of Livestock Services Livestock Call Centre contact, 16358, when the contact is configured and rechecked against the official source before release.
+
+Clearly distinguish government support contacts from Khamar Shurokkha's own services.
+
+## SERVICE 2 — KHAMAR BONDHU
+
+Farmer-facing name:
+
+"খামার বন্ধু"
+
+Purpose:
+
+A friendly Bengali-first digital AI chatbot that helps farmers understand routine animal care, basic preventive practices and farm management.
+
+It should feel approachable and visually friendly.
+
+### Main interface
+
+Include:
+
+- Friendly assistant avatar.
+- Bengali greeting.
+- Large input field.
+- Common question suggestions.
+- Clear chat history.
+- Simple response layout.
+- Relevant illustrated instructional cards where appropriate.
+
+Example questions:
+
+- "আমার গরু খাবার কম খাচ্ছে, কী করব?"
+- "খামারের পানি পরিষ্কার রাখব কীভাবে?"
+- "পোল্ট্রির ঘর পরিষ্কার রাখার নিয়ম কী?"
+- "কখন পশুচিকিৎসকের সাহায্য নিতে হবে?"
+
+### AI behavior and safety
+
+Khamar Bondhu should:
+
+- Use simple Bengali.
+- Ask relevant follow-up questions when necessary.
+- Provide practical and source-informed educational guidance.
+- Distinguish general prevention advice from medical treatment.
+- Recognize urgent symptoms and recommend veterinary support.
+- Never invent diagnoses, doses, treatment protocols or prescriptions.
+- Avoid claiming certainty when information is insufficient.
+- Direct farmers to Veterinary Services or the official Livestock Call Centre where appropriate.
+
+It must not replace a registered veterinarian.
+
+### Integration honesty
+
+Inspect actual existing backend and API integrations before making assumptions.
+
+If a live model endpoint is genuinely connected and functional, display it as an AI assistant.
+
+If the interface is still powered by scripted responses, clearly label it as a demonstration rather than a live AI service.
+
+Do not fabricate successful API calls.
+
+Do not expose Gemini or other provider credentials in frontend code.
+
+---
+
+# 8. DISEASE ALERTS, SEASONAL ADVISORIES AND DLS INFORMATION
+
+These are important supporting capabilities, but they should not dominate the main Home screen.
+
+Create a secondary section:
+
+**সতর্কতা ও তথ্য**
+
+This section should have three distinct categories.
+
+## Category A — রোগের সতর্কতা
+
+Include:
+
+- Disease-specific information.
+- Confirmed outbreak alerts.
+- Official disease advisories.
+- Relevant vet-reviewed guidance.
+- Affected species.
+- Location.
+- Source.
+- Publication/update date.
+- Verification status.
+- Relevant practical precautions.
+
+Distinguish confirmed outbreaks from unverified reports.
+
+Never invent local outbreak information.
+
+## Category B — মৌসুমি ও পরিবেশগত সতর্কতা
+
+Include relevant advisory topics such as:
+
+- Heat preparedness.
+- Heavy rainfall.
+- Flood preparedness.
+- Waterlogging.
+- Feed and drinking-water protection.
+- Housing and ventilation precautions.
+- Other relevant seasonal conditions.
+
+These are example topics, not live claims of active hazards.
+
+Use reliable weather/environmental sources where available.
+
+Do not infer a disease outbreak merely from weather conditions.
+
+## Category C — DLS তথ্য ও নোটিশ
+
+Include:
+
+- Official DLS notices.
+- Government livestock advisories.
+- Relevant livestock services.
+- Official campaign information.
+- Important public information.
+
+General DLS news must not automatically become a farmer task.
+
+Show source links and dates.
+
+Recognize the National Livestock Advisory System (NLAS) as a relevant official source.
+
+However:
+
+- Do not assume an API is available.
+- Do not invent live API connectivity.
+- Do not bypass access restrictions.
+- Use authorized integration only.
+- Where no integration exists, provide clearly labelled curated information or official links.
+
+## Alert-to-Action connection
+
+This is extremely important.
+
+An alert should reach Home as a task only when:
+
+1. The source and status are understood.
+2. It is relevant to the farmer's location.
+3. It is relevant to the farmer's animal species.
+4. A suitable recommended action exists.
+5. The same task has not already been created.
+
+Example:
+
+If a reliable storm warning applies to the farmer's area, the system may show a relevant farm-preparedness action, such as checking the housing structure or protecting stored feed, where appropriate.
+
+Do not turn every general weather update into an action.
+
+A confirmed disease alert must be clearly differentiated from a seasonal preparedness advisory.
+
+The full information belongs in the Information Center. The most important farm-specific action may appear in Home.
+
+---
+
+# 9. SMART FARMER NOTIFICATION SYSTEM
+
+Create a clear distinction between information, notification and action.
+
+- Information Center: full details and sources.
+- Notification Inbox: short updates and reminders.
+- Today's Activities: actions the farmer should perform.
+
+Do not duplicate the same content unnecessarily.
+
+## A. In-app notification
+
+The notification bell should open the Notification Inbox.
+
+Support notifications for:
+
+- Relevant disease advisories.
+- Important farm-specific alerts.
+- Action reminders.
+- Newly assigned activities.
+- Preventive-care schedules.
+- Veterinary appointment updates.
+- Important platform messages.
+
+Every notification should route to the appropriate screen.
+
+Reading a notification must not mark a farm activity as completed.
+
+## B. SMS notification capability
+
+Design the system architecture so that important farmer notifications can eventually be delivered through SMS.
+
+Requirements:
+
+- Phone number.
+- Verification status.
+- Farmer consent.
+- Notification preferences.
+- Relevant alert categories.
+- Reminder preferences.
+- Unsubscribe option.
+- Delivery status where supported.
+
+Do not send every reminder to every farmer.
+
+Suggested priority:
+
+- Relevant important official outbreak alert: potential priority SMS.
+- Critical farm-specific action: SMS when appropriate.
+- Routine preventive-care reminder: optional SMS.
+- General DLS news: generally in-app only.
+- General educational content: no routine SMS.
+
+Use concise Bengali messages.
+
+SMS must be sent through a secure backend and an authorized SMS gateway.
+
+Never expose SMS provider credentials in frontend code.
+
+Do not simulate actual delivery.
+
+If no gateway is connected, label SMS functionality as planned/demo and preserve the integration point for future development.
+
+Do not claim an SMS was sent or delivered unless confirmed by the provider.
+
+## C. Notification frequency
+
+Avoid notification fatigue.
+
+- Do not repeatedly notify about an action already completed.
+- Do not send reminders for non-applicable tasks.
+- Avoid unnecessary repeated alerts.
+- Respect farmer preferences and consent.
+- Provide sensible reminder frequency.
+- Support quiet hours where possible.
+
+## D. Future communication channels
+
+Keep the architecture extensible for future voice/IVR notifications.
+
+Do not implement a fake voice-call feature.
+
+---
+
+# 10. MY FARM
+
+Retain and improve existing farm-management functionality.
+
+Support:
+
+- Farm profile.
+- Animal registration.
+- Poultry/flock registration.
+- Animal details.
+- Health history.
+- Preventive-care history.
+- Feed and water records where supported.
+- Farm-specific data.
+
+Use species-specific photographs or illustrations.
+
+Create simple visual add-animal and add-flock forms.
+
+Do not overwhelm the farmer with unnecessary data fields.
+
+---
+
+# 11. HEALTH AND PREVENTIVE CARE CALENDAR
+
+Preserve existing vaccination, deworming and preventive-care functionality.
+
+Display:
+
+- Upcoming care.
+- Today's due tasks.
+- Overdue items.
+- Completed activity history.
+- Relevant animal/flock.
+- Appropriate schedule source.
+
+Use calendar, timeline and list views where appropriate.
+
+Make the most important upcoming work easy to find.
+
+Never invent vaccine doses, schedules, boosters or deworming intervals.
+
+Only use approved or appropriately reviewed schedule data.
+
+---
+
+# 12. KNOWLEDGE LIBRARY
+
+Maintain a separate, secondary educational section:
+
+"শিখি" or "খামার জ্ঞানভান্ডার".
+
+Do not place long educational articles on Home.
+
+Create categories:
+
+1. প্রাণীর স্বাস্থ্য ও যত্ন.
+2. জীবাণু প্রবেশ ও বিস্তার প্রতিরোধ.
+3. খাদ্য ও পানির নিরাপত্তা.
+4. খামারের পরিচ্ছন্নতা.
+5. রোগের লক্ষণ ও সতর্কতা.
+6. প্রতিরোধমূলক পরিচর্যা.
+
+Each item should contain:
+
+- Relevant image or illustration.
+- Short Bengali explanation.
+- Simple actionable steps.
+- Relevant species.
+- Source/review status where available.
+
+Knowledge should also appear contextually inside relevant Action Detail pages.
+
+For example, a task about cleaning a drinking-water container should include a relevant pictorial guide and a "আরও জানুন" option.
+
+Do not display unreviewed medical guidance as professional veterinary advice.
+
+---
+
+# 13. VISUAL EXPERIENCE AND PAGE-BY-PAGE DESIGN
+
+Improve the visual experience of every major page.
+
+The application should feel like a modern, premium and practical Bangladeshi digital agriculture product.
+
+Use relevant authentic or clearly illustrative visuals.
+
+## Home
+
+- Farmer with cattle/goat/poultry.
+- Farm identity visuals.
+- Primary action illustration.
+- Progress visualization.
+
+## My Farm
+
+- Species-specific animal imagery.
+- Animal/farm cards.
+- Clear health-status visuals.
+
+## BioShield
+
+- Pictorial audit.
+- Four-stage action loop.
+- Action-specific visual guides.
+
+## Action Detail
+
+- Step-by-step illustrations.
+- Large touch targets.
+- Clear progress.
+
+## Health Support
+
+Veterinary Services:
+- Professional veterinary imagery.
+- Clear appointment card.
+- Actual call/contact actions.
+
+Khamar Bondhu:
+- Friendly assistant illustration.
+- Clean chat interface.
+- Suggested questions.
+
+## Information Center
+
+- Disease illustrations.
+- Environmental/weather graphics.
+- Official-information cards.
+- Source and status labels.
+
+## Knowledge Library
+
+- Category thumbnails.
+- Visual learning cards.
+- Step-by-step instructional illustrations.
+
+## Image and asset rules
+
+- Reuse appropriate local assets.
+- Add contextual local images/illustrations only when useful.
+- Avoid random stock images.
+- Prefer optimized locally stored assets.
+- Avoid unstable external image URLs.
+- Use responsive aspect ratios.
+- Use image loading fallbacks.
+- Apply lazy loading.
+- Add alt text.
+- Use clearly labelled demo images where authenticity is not established.
+- Never make fictional doctors or demo farms appear to be real.
+
+---
+
+# 14. FINAL SIDEBAR AND NAVIGATION
+
+Simplify farmer navigation to four primary destinations:
+
+1. **আজকের করণীয়**
+   - Main Dashboard.
+   - Daily actions.
+   - Activity progress.
+
+2. **আমার খামার**
+   - Animals.
+   - Flocks.
+   - Farm records.
+
+3. **BioShield সুরক্ষা**
+   - Audit.
+   - Action Planner.
+   - Action history.
+   - BioShield explanation.
+
+4. **স্বাস্থ্য সহায়তা**
+   - Veterinary Services.
+   - Khamar Bondhu.
+
+Keep a visible notification bell in the header.
+
+Create a secondary "আরও" section for:
+
+- সতর্কতা ও তথ্য.
+- শিখি / Knowledge Library.
+- USSD Simulator.
+- Project Roadmap.
+- Protocol Governance.
+- Settings.
+- Other administrative/demo modules.
+
+Do not delete existing functional modules.
+
+For mobile, use a simple, responsive bottom navigation with large icons and short Bengali labels.
+
+Avoid too many navigation items.
+
+---
+
+# 15. DESIGN SYSTEM AND ACCESSIBILITY
+
+Create a consistent interface with:
+
+- Natural agricultural color palette.
+- Premium but simple cards.
+- Clear typography hierarchy.
+- Readable Bengali fonts already available in the project.
+- Consistent spacing.
+- Clear priority indicators.
+- Large buttons.
+- Progress bars.
+- Meaningful icons.
+- Contextual illustrations.
+
+Suggested color meanings:
+
+- Green: completed/normal.
+- Orange: attention/due soon.
+- Red: genuinely urgent/critical.
+- Blue: information/guidance.
+- Grey: inactive/upcoming.
+
+Do not rely on color alone to communicate status.
+
+Use approximately 44–48 px minimum touch targets.
+
+Avoid overuse of gradients, shadows, badges and decorative charts.
+
+Use short instructions and one primary CTA per task.
+
+Make mobile operation the primary design constraint.
+
+---
+
+# 16. TECHNICAL IMPLEMENTATION RULES
+
+Before changing the application, inspect the actual latest source code.
+
+Relevant files may include:
+
+- App.tsx
+- DashboardScreen.tsx
+- Sidebar.tsx
+- MobileNav.tsx
+- BiosecurityModuleScreen.tsx
+- AuditScreen.tsx
+- ActionPlannerScreen.tsx
+- ActionDetailModal.tsx
+- AnimalsScreen.tsx
+- PreventiveCareScreen.tsx
+- VetServicesScreen.tsx
+- AIAssistantScreen.tsx
+- RegionalAlertsScreen.tsx
+- Notification components and services.
+- Existing backend services.
+- Existing image/asset library.
+
+Do not assume earlier source versions and current files are identical.
+
+Strict requirements:
+
+1. Preserve the existing Dashboard default route.
+2. Preserve working Firebase integrations.
+3. Preserve existing application architecture.
+4. Do not rebuild unnecessarily.
+5. Do not remove functioning features without reason.
+6. Do not introduce unnecessary dependencies.
+7. Do not break existing data models or language switching.
+8. Do not introduce mandatory independent verification.
+9. Do not fabricate API connectivity.
+10. Do not expose secrets in frontend code.
+11. Do not create duplicate task records.
+12. Use the existing task priority logic where appropriate.
+13. Maintain consistent progress calculations.
+14. Preserve responsive functionality.
+15. Clearly separate demo features from operational features.
+
+If a proposed feature needs backend work, do not simulate successful real-world activity without labelling it.
+
+Do not generate fake live outbreak alerts, fake appointment confirmations, fake SMS delivery records or fabricated doctor verification.
+
+---
+
+# 17. IMPLEMENTATION ORDER
+
+Work in controlled phases.
+
+### Phase 1 — Home Dashboard
+- Maintain default Home.
+- Establish "আজকের করণীয়" as the central experience.
+- Primary action.
+- Next two tasks.
+- Activity percentage.
+- Relevant alerts only.
+
+### Phase 2 — BioShield and Action Planner
+- Remove Verify stage.
+- Implement the simplified four-stage flow.
+- Create guided action detail.
+- Implement farmer-reported completion.
+- Add help-needed and cannot-complete responses.
+- Improve activity progress.
+
+### Phase 3 — Health Support Center
+- Separate Veterinary Services and Khamar Bondhu.
+- Improve genuine vet profile and appointment request workflow.
+- Preserve clear AI safety boundaries.
+
+### Phase 4 — Alert and Information Architecture
+- Disease alerts.
+- Seasonal preparedness.
+- DLS notices.
+- Source and relevance labels.
+- Alert-to-action mapping.
+
+### Phase 5 — Notifications
+- Improve in-app notification routing.
+- Prepare consent-based SMS architecture.
+- Prevent duplicate and excessive notifications.
+- Clearly identify integration limitations.
+
+### Phase 6 — Visual Transformation
+- Contextual images and illustrations across major pages.
+- Better visual action instructions.
+- Responsive layouts.
+
+### Phase 7 — Knowledge and Navigation
+- Create secondary Knowledge Library.
+- Simplify sidebar.
+- Move internal/demo screens to secondary navigation.
+
+### Phase 8 — Testing
+Validate the application on mobile and desktop.
+
+---
+
+# 18. FINAL QUALITY VALIDATION
+
+Check:
+
+- Dashboard is the default screen.
+- Home clearly shows what the farmer must do today.
+- One primary action is prominent.
+- Only the next two actions appear by default.
+- Complete Action Planner remains accessible.
+- Activity percentages are accurate.
+- No disease-safety score is falsely displayed.
+- BioShield Loop has no mandatory Verify stage.
+- Task completion can be self-reported.
+- Farmer can request help.
+- Farmer can report inability to perform a task.
+- Non-applicable tasks are handled correctly.
+- The Health Support Center has exactly two primary service sections.
+- Vet information is not fabricated.
+- Appointment requests are not falsely confirmed.
+- Khamar Bondhu is not falsely presented as live AI.
+- Disease alerts have proper sources and classifications.
+- Seasonal preparedness is distinguished from confirmed outbreaks.
+- DLS news is not automatically converted into an action.
+- Relevant alerts can create appropriate farm-specific activities.
+- Notifications open the correct destinations.
+- Fake SMS delivery status does not exist.
+- Mobile navigation works.
+- Contextual visual assets load properly.
+- No existing working feature is unintentionally broken.
+
+Do not claim tests passed unless you actually ran them.
+
+At completion, report:
+
+1. What changed.
+2. Which files were modified.
+3. Which modules were preserved.
+4. Which new assets were added.
+5. Which features are operational.
+6. Which features remain demo-only or planned.
+7. Which backend integrations are still required.
+8. What testing was actually completed.
+
+---
+
+# FINAL PRODUCT PHILOSOPHY
+
+Khamar Shurokkha must not feel like a complicated administrative dashboard or a collection of unrelated modules.
+
+It should feel like a friendly, reliable farm companion.
+
+The farmer opens the application and immediately understands:
+
+- What needs attention today.
+- Which action should be done first.
+- Why it matters.
+- How to complete it.
+- How much of today's work has been completed.
+- Where to ask for help.
+
+The farmer should never be forced through unnecessary technical processes, verification procedures or complicated navigation.
+
+**ONE FARM. ONE CLEAR PLAN. SIMPLE DAILY ACTIONS. CONTINUOUS FARMER SUPPORT.**
+
+Design for the farmer first. Technology should make the farmer's work easier, not more complicated.

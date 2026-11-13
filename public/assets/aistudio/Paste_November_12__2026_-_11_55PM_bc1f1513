@@ -1,0 +1,1679 @@
+# KHAMAR SHUROKKHA
+# MASTER GOOGLE AI STUDIO UI/UX REDESIGN & PRODUCT DEVELOPMENT PROMPT
+## Farmer-First Action Center | BioShield Protection Framework | BioShield Loop
+
+### ROLE AND EXPERTISE
+
+Act as a world-class multidisciplinary product development team consisting of:
+
+- A top 1% Senior Product Designer.
+- A world-class UI/UX Architect.
+- A Senior Full-Stack Software Engineer.
+- A Senior Frontend Developer.
+- A Livestock AgriTech Product Strategist.
+- A Veterinary Digital Health Product Specialist.
+- A Human-Centered Design Expert.
+- A Data Visualization Specialist.
+- A Product Innovation and Competition Strategy Expert.
+- A Technical Quality Assurance Engineer.
+
+Your mission is to significantly improve the existing Khamar Shurokkha application inside Google AI Studio.
+
+You must not merely redesign the website to look attractive.
+
+You must transform it into a visually engaging, farmer-friendly, action-oriented, logically connected, and technically functional livestock farm-protection platform.
+
+You must think critically. Do not blindly accept every existing design decision. Review the current prototype, identify its weaknesses, and implement the best possible solution while preserving functional components.
+
+---
+
+# SECTION 01: PROJECT IDENTITY AND CENTRAL VISION
+
+## Project Name
+
+KHAMAR SHUROKKHA (খামার সুরক্ষা)
+
+## Tagline
+
+"আপনার খামার, প্রতিদিনের যত্ন।"
+
+## Core Proposition
+
+"One Platform to Protect Your Farm."
+
+Khamar Shurokkha is a farmer-first digital livestock and poultry management platform designed for smallholder farmers in Bangladesh.
+
+The application integrates farm management, preventive animal healthcare, biosecurity, disease information, veterinary support, and personalized farm-protection actions.
+
+## The Three Core Concepts
+
+### 1. Khamar Shurokkha
+The complete digital platform.
+
+### 2. BioShield
+The integrated farm-protection framework.
+
+BioShield coordinates different relevant farm-protection activities:
+
+- Biosecurity management.
+- Preventive animal healthcare.
+- Vaccination management.
+- Deworming management.
+- Farm health monitoring.
+- Disease alerts and preventive precautions.
+- Routine farm maintenance.
+- Relevant weather precautions.
+- Veterinary referral.
+- Protection task management.
+
+BioShield is broader than conventional biosecurity.
+
+### 3. BioShield Loop
+The central operational mechanism inside BioShield.
+
+The BioShield Loop converts identified protection needs into manageable actions.
+
+Its four stages are:
+
+IDENTIFY → PRIORITIZE → ASSIGN ACTION → VERIFY
+
+The system must function as a connected workflow, not merely as a circular infographic.
+
+---
+
+# SECTION 02: PRIMARY PRODUCT DESIGN OBJECTIVE
+
+The application must answer the following question immediately when a farmer opens it:
+
+**"আজ আমার খামারের সুরক্ষার জন্য কী কী কাজ করতে হবে?"**
+
+The farmer should not need to explore several sidebar sections to understand the most important tasks.
+
+The homepage should provide:
+
+1. Today's most important farm activities.
+2. Critical and overdue tasks.
+3. Upcoming preventive-care activities.
+4. A visual BioShield protection progress indicator.
+5. A clear explanation of why each task matters.
+6. Simple step-by-step guidance.
+7. A direct call to action.
+8. Easy access to veterinary support.
+9. Relevant disease and weather alerts.
+10. A quick overview of the farm and its animals.
+
+The application should feel like a personalized farm-protection assistant, not a generic administration dashboard.
+
+---
+
+# SECTION 03: AUDIT THE EXISTING APPLICATION FIRST
+
+Before modifying the source code, inspect the entire existing Google AI Studio project.
+
+The current prototype already includes six designed farmer-facing screens:
+
+- Farmer Home Dashboard.
+- Animals & Flocks.
+- Care Calendar.
+- Health Assistant.
+- Animal Profile.
+- Notifications Center.
+
+The current interface also contains other modules such as BioShield, Veterinary Services, Disease Alerts, Protocol Library, Roadmap, and USSD Demo.
+
+Inspect:
+
+- Existing source code.
+- Components.
+- Navigation structure.
+- Styling.
+- Routing.
+- Data structures.
+- Existing interactions.
+- Current mock data.
+- Existing visual assets.
+- Existing Google AI Studio functionality.
+
+Determine which components are functional, simulated, or UI-only.
+
+Do not invent files or functionality.
+
+Do not unnecessarily replace the current technology stack.
+
+Do not destroy existing functional components.
+
+Preserve useful code and existing functionality wherever possible.
+
+After this brief audit, proceed with the redesign and implementation. Do not stop at merely providing an audit report.
+
+---
+
+# SECTION 04: COMPLETE UI/UX DESIGN TRANSFORMATION
+
+## A. Overall Design Language
+
+Create a premium, modern, polished, and visually engaging AgriTech SaaS interface.
+
+The design should be inspired by the best interaction and visual design practices from modern farm management applications, veterinary platforms, healthcare dashboards, and premium productivity applications.
+
+Use those applications as quality benchmarks.
+
+Do not copy their branding, layouts, or proprietary assets.
+
+The application should have its own recognizable visual identity.
+
+### Design characteristics
+
+- Premium visual hierarchy.
+- Modern card-based layout.
+- Attractive color combinations.
+- Strong visual distinction between task priorities.
+- Clear and consistent typography.
+- Beautiful but restrained gradients.
+- Soft shadows.
+- Rounded corners.
+- Subtle borders.
+- High-quality iconography.
+- Contextual photography.
+- Meaningful data visualization.
+- Smooth page transitions.
+- Responsive layouts.
+- Excellent mobile usability.
+
+The design must not feel like a basic HTML dashboard or a generic template.
+
+### Color System
+
+Establish a consistent design system.
+
+Primary colors:
+
+- Deep Forest Green: #064E3B
+- Emerald Green: #059669
+- Mint Green: #D1FAE5
+- Soft Background: #F4F8F6
+- White: #FFFFFF
+
+Priority colors:
+
+- Critical: #DC2626
+- Overdue: #B91C1C
+- High Priority: #EA580C
+- Medium Priority: #D97706
+- Low Priority: #2563EB
+- Completed: #059669
+- Upcoming: #0D9488
+
+Use colors consistently across the entire application.
+
+Critical and overdue tasks must have unmistakable visual prominence.
+
+Do not use red merely as a decorative color.
+
+### Typography
+
+Use a beautiful, readable Bengali-first font system.
+
+Recommended Bengali fonts:
+
+- Hind Siliguri.
+- Noto Sans Bengali.
+
+Use suitable Latin typography for English technical labels.
+
+Ensure Bengali text is readable on small screens.
+
+### Visual Assets
+
+Use relevant, high-quality visuals wherever they materially improve comprehension.
+
+Examples:
+
+- Cattle photography.
+- Goat photography.
+- Poultry imagery.
+- Farmer and livestock illustrations.
+- Veterinary professional imagery.
+- Vaccination illustrations.
+- Deworming illustrations.
+- Biosecurity entry illustrations.
+- Handwashing illustrations.
+- Isolation illustrations.
+- Farm protection icons.
+- Weather precaution illustrations.
+
+Use genuine assets, available project assets, or suitable generated illustrations.
+
+Do not use random unrelated stock photos.
+
+Avoid unnecessary decorative imagery that makes the interface slower or confusing.
+
+---
+
+# SECTION 05: RESTRUCTURE THE SIDEBAR NAVIGATION
+
+The existing sidebar contains too many separate navigation items.
+
+Review the navigation and reorganize it into a more intuitive structure.
+
+The goal is not to eliminate important functionality.
+
+The goal is to reduce unnecessary navigation complexity and group related activities.
+
+## Recommended Navigation Architecture
+
+### 1. হোম ও আজকের কাজ
+The Farmer Action Center.
+
+This must be the primary landing page.
+
+### 2. বায়োশিল্ড সুরক্ষা কেন্দ্র
+The central BioShield management section.
+
+Include:
+
+- BioShield overview.
+- Protection progress.
+- BioShield Loop.
+- Farm assessment.
+- Priority tasks.
+- Action assignments.
+- Completion tracking.
+- Verification.
+- Protection history.
+
+### 3. আমার খামার
+Consolidate farm management.
+
+Subsections:
+
+- Farm Overview.
+- Animals & Flocks.
+- Animal Profiles.
+- Health Records.
+- Farm Information.
+
+### 4. স্বাস্থ্য ও যত্ন ক্যালেন্ডার
+Consolidate:
+
+- Vaccination.
+- Deworming.
+- Preventive care.
+- Health activities.
+- Calendar view.
+- Upcoming activities.
+- Care history.
+
+### 5. সুরক্ষা তথ্য কেন্দ্র
+Consolidate:
+
+- DLS information.
+- Official disease advisories.
+- Regional alerts.
+- Weather precautions.
+- Approved preventive protocols.
+- Important announcements.
+
+### 6. সহায়তা কেন্দ্র
+Consolidate AI assistance and veterinary support.
+
+Subsections:
+
+- খামার বন্ধু.
+- Veterinary Consultation.
+- Referral Requests.
+- Contact Support.
+- Frequently Asked Questions.
+
+### 7. নোটিফিকেশন
+All relevant notifications.
+
+### Lower-priority navigation
+
+Place the following in a secondary navigation area or "আরও" section:
+
+- প্রটোকল লাইব্রেরি.
+- USSD Demo.
+- Project Roadmap.
+- About Khamar Shurokkha.
+- Settings.
+
+Important:
+
+The primary navigation should remain easy to understand.
+
+Do not bury the BioShield Center, Farmer Action Center, or Veterinary Support under secondary navigation.
+
+On mobile, use a compact bottom navigation with a maximum of five primary destinations and a More menu for the rest.
+
+All navigation items must actually work.
+
+---
+
+# SECTION 06: REDESIGN THE FARMER HOME DASHBOARD
+
+This is the highest-priority design and development task.
+
+## The Homepage Layout
+
+Design the dashboard in the following order.
+
+### PART A: FARM IDENTITY HEADER
+
+Show:
+
+- Farm name.
+- Farmer name.
+- Farm location.
+- Farm ID.
+- Farm type.
+- Total animals.
+- Total flocks, where applicable.
+
+Use a visually attractive farm identity card.
+
+Include a contextual farm illustration or photo where appropriate.
+
+The header must not consume excessive vertical space.
+
+### PART B: TODAY'S FARM ACTION CENTER
+
+Section title:
+
+"আজ আপনার খামারের করণীয়"
+
+Subtitle:
+
+"খামারের সুরক্ষায় আজকের গুরুত্বপূর্ণ কাজগুলো একে একে সম্পন্ন করুন।"
+
+This must become the dominant part of the homepage.
+
+Display tasks using an attractive visual task-card system.
+
+Every task card should include:
+
+- Task title in clear Bengali.
+- Priority label.
+- Affected animal or farm activity.
+- Due date.
+- Why the task matters.
+- Simple action guidance.
+- Responsible person, if assigned.
+- Current status.
+- Estimated duration, only when reasonable and supported.
+- Clear call-to-action button.
+
+### Priority Design
+
+CRITICAL / জরুরি:
+
+- Strong red visual treatment.
+- Red border or left accent.
+- Clear urgency icon.
+- Visible deadline.
+- Immediate action button.
+
+OVERDUE / সময় পেরিয়ে গেছে:
+
+- Prominent dark-red label.
+- Clear overdue duration, where calculable.
+- Immediate follow-up action.
+
+HIGH / উচ্চ গুরুত্ব:
+
+- Orange accent.
+- Strong visual prominence.
+
+MEDIUM / মাঝারি:
+
+- Amber accent.
+
+LOW / সাধারণ:
+
+- Blue or neutral accent.
+
+UPCOMING / আসন্ন:
+
+- Soft teal or green accent.
+
+COMPLETED:
+
+- Green success state.
+
+Do not use the same visual appearance for all task priorities.
+
+### PART C: TASK FILTERING
+
+Provide useful filters:
+
+- সব কাজ.
+- জরুরি.
+- আজকের কাজ.
+- আসন্ন.
+- সম্পন্ন.
+
+Show the task counts.
+
+Filters must be functional.
+
+### PART D: TASK CARD INTERACTION
+
+When the farmer clicks a task:
+
+Open a structured task detail view.
+
+The detail view should explain:
+
+1. What is the problem or protection need?
+2. Why does it matter?
+3. Which animal, flock, or farm activity is affected?
+4. What should the farmer do?
+5. How should the farmer do it?
+6. Who is responsible?
+7. When should it be completed?
+8. How can completion be recorded?
+9. Does it require verification?
+
+Provide a step-by-step visual guide.
+
+Use a modal, drawer, or dedicated detail page according to the existing architecture.
+
+### PART E: QUICK ACTIONS
+
+Create visually attractive quick-action cards.
+
+Examples:
+
+- + নতুন প্রাণী যোগ করুন.
+- + নতুন পোল্ট্রি ব্যাচ.
+- টিকা রেকর্ড করুন.
+- কৃমিনাশক রেকর্ড করুন.
+- খামার মূল্যায়ন করুন.
+- পশুচিকিৎসকের পরামর্শ নিন.
+
+These buttons must open their appropriate functional workflows.
+
+### PART F: FARM HEALTH OVERVIEW
+
+Show useful farm information:
+
+- Total animals.
+- Total flocks.
+- Upcoming vaccination activities.
+- Upcoming deworming activities.
+- Open BioShield tasks.
+- Overdue tasks.
+- Recent health events.
+
+Use meaningful visualization.
+
+Avoid displaying meaningless metrics.
+
+### PART G: RELEVANT FARM ALERTS
+
+Show only relevant information.
+
+Examples:
+
+- An official disease advisory relevant to the farmer's region and species.
+- An upcoming vaccination activity.
+- A weather-related precaution.
+- A newly assigned protection task.
+
+Include a source and date when applicable.
+
+### PART H: VETERINARY SUPPORT
+
+Place a prominent veterinary support card near the dashboard's important action areas.
+
+Use an attractive professional visual.
+
+CTA:
+
+"পশুচিকিৎসকের পরামর্শ নিন"
+
+The card should make it easy for farmers to seek assistance.
+
+Do not claim 24/7 availability unless an actual operational service exists.
+
+---
+
+# SECTION 07: BIO SHIELD PROTECTION PROGRESS VISUALIZATION
+
+The existing BioShield progress card is too text-heavy and does not explain what the percentage means.
+
+Redesign it as a visually impressive protection progress section.
+
+## Main Title
+
+"আপনার খামারের সুরক্ষা অগ্রগতি"
+
+Subtitle:
+
+"খামারের গুরুত্বপূর্ণ সুরক্ষা কার্যক্রম কতটা সম্পন্ন হয়েছে তা দেখুন।"
+
+## Primary Visualization
+
+Create a large, elegant circular progress indicator.
+
+Inside the circle display:
+
+- Protection Progress Percentage.
+- BioShield.
+- A clear label such as "সুরক্ষা কার্যক্রম সম্পন্ন".
+
+The percentage must be dynamically calculated from actual defined assessment or action records.
+
+Do not use arbitrary hardcoded values.
+
+## Supporting Metrics
+
+Show four visually distinct cards:
+
+- সম্পন্ন.
+- চলমান.
+- অপেক্ষমাণ.
+- জরুরি / বিলম্বিত.
+
+Each card should have:
+
+- Unique color.
+- Relevant icon.
+- Number.
+- Clear label.
+- Clickable navigation to the relevant task list.
+
+## IMPORTANT: SCIENTIFIC AND DATA INTEGRITY
+
+The BioShield percentage must represent a defined measure.
+
+Preferred initial metric:
+
+Percentage of eligible, defined protection actions completed within the selected assessment or reporting period.
+
+The calculation must have:
+
+- A defined numerator.
+- A defined denominator.
+- A documented calculation method.
+- Clear treatment of pending and overdue actions.
+
+Do not calculate the percentage using arbitrary numbers.
+
+Do not claim:
+
+- Disease-proof farm.
+- Guaranteed protection.
+- Scientifically validated disease risk reduction.
+- 100% disease prevention.
+
+A completed task does not automatically establish that a farm is biologically safe.
+
+Display a short explanation:
+
+"এই অগ্রগতি নির্ধারিত সুরক্ষা কার্যক্রমের সম্পন্ন হওয়ার হার নির্দেশ করে; এটি রোগমুক্তি বা সম্পূর্ণ সুরক্ষার নিশ্চয়তা নয়।"
+
+Provide an information tooltip or expandable explanation.
+
+---
+
+# SECTION 08: VISUALIZE THE BIOSHIELD LOOP
+
+This is the most important innovation-specific UI component.
+
+The current four stages are difficult for farmers to understand.
+
+Do not merely write:
+
+IDENTIFY → PRIORITIZE → ASSIGN ACTION → VERIFY
+
+Instead, transform the workflow into an easy-to-understand visual experience.
+
+## Four-Stage Farmer-Friendly Presentation
+
+### STAGE 01: শনাক্ত করুন
+
+English technical label: IDENTIFY
+
+Farmer-facing explanation:
+
+"খামারে কোন কাজটি করা প্রয়োজন তা খুঁজে বের করুন।"
+
+Visual:
+
+A magnifying glass inspecting a farm, animal, or protection checklist.
+
+Show:
+
+- Identified issue.
+- Affected animal or farm activity.
+- Source of the issue.
+
+Example:
+
+"খামারের প্রবেশপথে জীবাণুনাশক ব্যবস্থা পর্যালোচনা করা প্রয়োজন।"
+
+CTA:
+
+"সমস্যাটি দেখুন"
+
+### STAGE 02: গুরুত্ব বুঝুন
+
+English technical label: PRIORITIZE
+
+Farmer-facing explanation:
+
+"কোন কাজটি আগে করা জরুরি তা বুঝুন।"
+
+Visual:
+
+A priority ladder, traffic-light indicator, or urgency scale.
+
+Show:
+
+- জরুরি.
+- উচ্চ গুরুত্ব.
+- মাঝারি.
+- সাধারণ.
+
+Explain why the task receives its priority.
+
+CTA:
+
+"কেন জরুরি দেখুন"
+
+### STAGE 03: কাজটি সম্পন্ন করুন
+
+English technical label: ASSIGN ACTION
+
+Farmer-facing explanation:
+
+"কীভাবে কাজটি করবেন, তা ধাপে ধাপে অনুসরণ করুন।"
+
+Visual:
+
+A farmer performing a farm-protection activity.
+
+Show:
+
+- Assigned person.
+- Instructions.
+- Deadline.
+- Checklist.
+- Required materials, where appropriate.
+
+CTA:
+
+"কাজ শুরু করুন"
+
+### STAGE 04: সম্পন্ন ও যাচাই
+
+English technical label: VERIFY
+
+Farmer-facing explanation:
+
+"কাজটি সম্পন্ন হয়েছে কি না তা রেকর্ড করুন এবং প্রয়োজনে যাচাই করুন।"
+
+Visual:
+
+A completed checklist with an evidence or verification icon.
+
+Show:
+
+- Completion status.
+- Farmer confirmation.
+- Supporting evidence.
+- Verification status.
+
+CTA:
+
+"কাজ সম্পন্ন করুন"
+
+## Loop Visualization
+
+Create an attractive four-stage connected diagram.
+
+Use:
+
+- Circular flow.
+- Animated progress indicators.
+- Stage-specific icons.
+- Clear Bengali descriptions.
+- Active stage highlighting.
+- Completed stage highlighting.
+- Stage counts.
+
+When a stage is clicked, show its relevant task list or explanation.
+
+The diagram must be interactive.
+
+Do not make it a decorative illustration.
+
+---
+
+# SECTION 09: BIOSHIELD PROTECTION DOMAINS
+
+The platform's four protection domains must be visually understandable.
+
+Use clear Bengali names, visual icons, and contextual illustrations.
+
+Avoid complicated scientific terminology in the farmer-facing interface.
+
+### Domain 1: প্রাণীর স্বাস্থ্য ও যত্ন
+
+Include:
+
+- Vaccination.
+- Deworming.
+- Preventive care.
+- Health records.
+- Routine animal health activities.
+
+Visuals:
+
+Cattle, goats, poultry, vaccination syringe, health shield.
+
+### Domain 2: খামারের জীবাণু প্রতিরোধ
+
+Include:
+
+- Visitor management.
+- Hand hygiene.
+- Entry-point hygiene.
+- Equipment cleanliness.
+- Isolation of sick animals.
+- Farm hygiene and sanitation.
+
+Visuals:
+
+Farm entry gate, handwashing, disinfectant, isolation pen.
+
+### Domain 3: রোগ ও পরিবেশগত সতর্কতা
+
+Include:
+
+- Official disease advisories.
+- Relevant regional disease information.
+- Species-specific precautions.
+- Weather-related farm precautions.
+- Relevant preventive action.
+
+Visuals:
+
+Disease alert shield, weather icon, farm map, animal protection.
+
+### Domain 4: খামার ব্যবস্থাপনা ও ফলো-আপ
+
+Include:
+
+- Routine farm maintenance.
+- Protection task tracking.
+- Care schedules.
+- Task completion.
+- Follow-up activities.
+- Verification.
+
+Visuals:
+
+Checklist, calendar, farmer, progress indicator.
+
+Important:
+
+The domain categories are a product organization framework, not an independently validated veterinary classification.
+
+Allow the categories and assessment criteria to be configured by qualified professionals.
+
+---
+
+# SECTION 10: FARM AND ANIMAL MANAGEMENT VISUAL REDESIGN
+
+Redesign the "আমার খামার" section.
+
+It must look like a modern livestock management application.
+
+## Farm Overview
+
+Show:
+
+- Farm photograph or illustration.
+- Farm name.
+- Farm ID.
+- Farmer information.
+- Location.
+- Species categories.
+- Animal counts.
+- Flock counts.
+- Relevant farm metrics.
+
+## Animal and Flock Cards
+
+Use contextual animal imagery.
+
+Examples:
+
+- Cow / cattle.
+- Goat.
+- Sheep.
+- Poultry.
+- Duck.
+
+Each animal or flock card should show:
+
+- Animal or Flock ID.
+- Photo or species illustration.
+- Name or description.
+- Species.
+- Age, if available.
+- Health status, if recorded.
+- Relevant upcoming care activity.
+
+Do not use generic text-only cards.
+
+## New Animal Registration
+
+Redesign the registration process as a simple, visually guided multi-step form.
+
+Step 1: Species selection.
+
+Step 2: Animal identification.
+
+Step 3: Basic animal information.
+
+Step 4: Farm association.
+
+Step 5: Initial health records, where available.
+
+Step 6: Confirmation.
+
+Use visual species selection cards.
+
+## Poultry Batch Registration
+
+Include:
+
+- Species.
+- Batch ID.
+- Batch size.
+- Placement date.
+- Farm association.
+- Relevant health records.
+
+Provide clear visual guidance.
+
+## Animal Profile
+
+Use a visually attractive profile page with:
+
+- Animal photo.
+- Identification information.
+- Health status.
+- Health timeline.
+- Vaccination history.
+- Deworming history.
+- Preventive-care calendar.
+- Relevant BioShield tasks.
+
+Create an elegant timeline visualization.
+
+Do not invent animal health information.
+
+---
+
+# SECTION 11: VACCINATION AND DEWORMING CALENDAR
+
+The existing care calendar should be significantly improved.
+
+Create an interactive visual calendar.
+
+## Calendar Views
+
+Provide:
+
+- Monthly view.
+- Weekly view.
+- Agenda view.
+
+## Color Coding
+
+- Vaccination: Blue.
+- Deworming: Purple.
+- Preventive care: Green.
+- Critical or overdue: Red.
+- Upcoming: Amber.
+
+The color coding must be consistent across the dashboard.
+
+## Calendar Events
+
+Each event should display:
+
+- Animal or flock.
+- Activity type.
+- Planned date.
+- Status.
+- Relevant instructions.
+- Responsible person.
+- Completion record.
+
+Clicking an event should open its detail view.
+
+## Visual Guidance
+
+Use relevant visual elements such as:
+
+- Vaccination syringe icon.
+- Calendar illustration.
+- Animal image.
+- Deworming-related illustration.
+- Booster-dose icon.
+
+Use scientific caution.
+
+Do not generate universal vaccination or deworming schedules.
+
+Schedules must be based on appropriate veterinary guidance and farm context.
+
+---
+
+# SECTION 12: AI FARMER EDUCATION ASSISTANT
+
+Rename the existing AI health assistant.
+
+## Final Name
+
+"খামার বন্ধু"
+
+Subtitle:
+
+"আপনার খামারের যত্নে সহায়তার হাত।"
+
+Do not prominently use the generic label "AI Chatbot."
+
+The AI technology can be identified discreetly within the information or privacy section.
+
+## Visual Design
+
+Create a modern conversational interface.
+
+Include:
+
+- Friendly farm-related illustration.
+- Clear message bubbles.
+- Bengali-first communication.
+- Voice-input capability only if actually implemented.
+- Suggested question cards.
+- Contextual quick actions.
+
+Suggested questions:
+
+- "গরুর টিকা সম্পর্কে জানতে চাই।"
+- "খামারের জীবাণু প্রতিরোধ কীভাবে করব?"
+- "আমার খামারের আজকের কাজগুলো কী?"
+- "পশুচিকিৎসকের সাহায্য কীভাবে পাব?"
+- "এই নোটিফিকেশনটির অর্থ কী?"
+
+## Safety
+
+The assistant must provide educational guidance only.
+
+It must not diagnose diseases, prescribe medications or dosages, invent vaccination schedules, or replace veterinary professionals.
+
+For potentially urgent animal-health situations, clearly encourage prompt veterinary examination.
+
+Do not claim that the AI assistant is a veterinarian.
+
+---
+
+# SECTION 13: VETERINARY CONSULTATION AND SUPPORT CENTER
+
+Create a professional, visually engaging Veterinary Support Center.
+
+## Main Title
+
+"পশুচিকিৎসা পরামর্শ ও সেবা"
+
+Subtitle:
+
+"আপনার প্রাণীর স্বাস্থ্য সমস্যায় পেশাদার সহায়তার জন্য যোগাযোগ করুন।"
+
+## Visual Components
+
+Create a prominent veterinary consultation card.
+
+Include:
+
+- Veterinarian or veterinary professional illustration.
+- Consultation request.
+- Animal selection.
+- Farm selection.
+- Problem description.
+- Relevant health history.
+- Image upload, if supported.
+- Referral status.
+- Follow-up information.
+
+## CTA Buttons
+
+- "পরামর্শের জন্য আবেদন করুন"
+- "পশুচিকিৎসকের সাথে যোগাযোগ করুন"
+- "রেফারেল অনুরোধ করুন"
+
+## Hotline
+
+Include a clearly identifiable hotline card only when a genuine contact number is available.
+
+Use a configurable placeholder in the development environment if the actual number is not supplied.
+
+Never invent a real hotline number.
+
+Do not advertise 24/7 availability unless it is operationally supported.
+
+## Consultation Flow
+
+Create a clear visual workflow:
+
+Request Consultation → Submit Animal Information → Review / Referral → Veterinary Response → Follow-Up
+
+Distinguish a functional request form from an operational veterinary network.
+
+---
+
+# SECTION 14: UNIFIED PROTECTION INFORMATION CENTER
+
+The DLS information, disease alerts, weather updates, and relevant farm-protection information should be consolidated into one section.
+
+## Name
+
+"সুরক্ষা তথ্য কেন্দ্র"
+
+This section should contain:
+
+### A. DLS Official Information
+
+Display official information where available.
+
+Include:
+
+- Source organization.
+- Publication date.
+- Relevant information.
+- Link to the original source.
+- Last updated date.
+
+Do not fabricate DLS notices.
+
+### B. Disease Alerts
+
+Support relevant disease advisories.
+
+Examples may include:
+
+- Lumpy Skin Disease (LSD).
+- Avian Influenza.
+- Foot-and-Mouth Disease.
+- Other relevant livestock and poultry disease advisories.
+
+These are examples of possible advisory categories, not claims of current outbreaks.
+
+Each alert should show:
+
+- Disease name.
+- Geographic relevance.
+- Affected species.
+- Advisory level.
+- Source.
+- Publication date.
+- Precautionary guidance.
+
+Clearly distinguish:
+
+- Official advisory.
+- Unverified report.
+- Confirmed notification.
+
+### C. Weather Information
+
+Include weather-related farm precautions only when appropriate.
+
+Examples:
+
+- Heat stress precautions.
+- Heavy rainfall precautions.
+- Flood-related farm protection.
+- Cold-weather livestock management.
+
+Weather data must come from a genuine available source.
+
+Do not simulate live weather and represent it as real.
+
+### D. Protection Action Integration
+
+This is a critical requirement.
+
+A relevant disease advisory or weather advisory must be capable of generating a BioShield protection task.
+
+Example:
+
+A verified advisory relevant to the farmer's region and species may create a task such as:
+
+"প্রাসঙ্গিক রোগ প্রতিরোধ ব্যবস্থা পর্যালোচনা করুন।"
+
+The generated task should contain:
+
+- Advisory source.
+- Reason for relevance.
+- Recommended precaution.
+- Priority.
+- Due date, where justified.
+- Responsible person.
+- Completion status.
+
+Do not automatically generate urgent tasks from unrelated or unverified alerts.
+
+Disease advisories must be professionally reviewed where veterinary-sensitive action is involved.
+
+---
+
+# SECTION 15: NOTIFICATION CENTER
+
+Redesign the notification system as a visually engaging notification inbox.
+
+Group notifications by:
+
+- জরুরি.
+- আজকের.
+- আসন্ন.
+- তথ্য.
+- সম্পন্ন.
+
+Each notification should include:
+
+- Icon.
+- Title.
+- Description.
+- Source.
+- Date.
+- Relevant action.
+- Read / unread state.
+
+Notification categories should include:
+
+- BioShield task updates.
+- Vaccination reminders.
+- Deworming reminders.
+- Relevant disease advisories.
+- Weather precautions.
+- Veterinary consultation updates.
+- System announcements.
+
+Notifications must be connected to the actual task or information record.
+
+Do not create meaningless duplicate notifications.
+
+---
+
+# SECTION 16: PROTOCOL LIBRARY
+
+The protocol library should not dominate the primary dashboard.
+
+Keep it accessible in the secondary navigation.
+
+Redesign it as a visually attractive educational resource center.
+
+Include:
+
+- Topic cards.
+- Illustrated guides.
+- Step-by-step instructions.
+- Relevant species.
+- Source information.
+- Review status.
+- Relevant BioShield domain.
+
+Examples:
+
+- Farm entry hygiene.
+- Visitor management.
+- Animal isolation.
+- Vaccination management.
+- Deworming management.
+- Handwashing.
+- Farm sanitation.
+
+The protocol content must be based on appropriate veterinary and biosecurity guidance.
+
+Use simple Bengali explanations.
+
+When a protocol is related to an active task, link the protocol directly to the task detail view.
+
+---
+
+# SECTION 17: USSD DEMO AND ACCESSIBILITY
+
+Keep the USSD Simulator accessible from the secondary navigation.
+
+Redesign it as a realistic interactive demonstration.
+
+Include:
+
+- Phone interface visualization.
+- USSD session simulation.
+- Bengali menu options.
+- Navigation using numeric selections.
+- A realistic session flow.
+- A clear demo label.
+
+Example:
+
+Welcome to Khamar Shurokkha.
+
+1. আজকের কাজ.
+2. প্রাণীর তথ্য.
+3. টিকার তথ্য.
+4. রোগ সতর্কতা.
+5. পশুচিকিৎসা সহায়তা.
+
+Allow the user to simulate the session.
+
+Include a clear distinction:
+
+"এটি একটি ডেমো সিমুলেশন। বাস্তব USSD সেবা বর্তমানে সক্রিয় কি না তা সেবা-সংক্রান্ত তথ্য থেকে নিশ্চিত করতে হবে।"
+
+Do not claim a working telecom integration unless one exists.
+
+If an actual hotline is available, provide a real clickable call link.
+
+If no number is configured, do not fabricate one.
+
+---
+
+# SECTION 18: PROJECT ROADMAP
+
+Redesign the roadmap as a visual innovation journey.
+
+Use:
+
+- Horizontal or vertical timeline.
+- Stage cards.
+- Milestone icons.
+- Completion indicators.
+- Phase labels.
+- Relevant illustrations.
+
+Possible roadmap phases:
+
+1. Prototype Development.
+2. Core MVP Development.
+3. BioShield Loop Integration.
+4. Pilot Testing.
+5. Veterinary Support Integration.
+6. Offline and Accessibility Improvements.
+7. USSD / Voice Expansion.
+8. Institutional Integrations.
+
+Clearly distinguish:
+
+- Completed.
+- In progress.
+- Planned.
+- Future vision.
+
+Do not mark future milestones as completed.
+
+The roadmap must reflect actual project status.
+
+---
+
+# SECTION 19: VISUAL INTERACTION AND MICRO-ANIMATIONS
+
+Implement tasteful, meaningful micro-interactions.
+
+Examples:
+
+- Smooth page transitions.
+- Card hover effects.
+- Button press feedback.
+- Circular progress animation.
+- Task completion animation.
+- BioShield Loop stage transitions.
+- Calendar event interactions.
+- Notification badge transitions.
+- Loading skeletons.
+- Empty-state illustrations.
+- Success feedback.
+- Progress indicators.
+
+Animations should improve comprehension and usability.
+
+Avoid:
+
+- Excessive animation.
+- Distracting moving backgrounds.
+- Heavy 3D effects.
+- Unnecessary parallax.
+- Overloaded gradients.
+- Excessive motion on low-end mobile devices.
+
+Respect reduced-motion accessibility settings where supported.
+
+Use CSS or the project's existing animation library where appropriate.
+
+Do not introduce a large new dependency for a minor visual effect.
+
+---
+
+# SECTION 20: RESPONSIVE DESIGN
+
+The application must work exceptionally well on:
+
+- Desktop.
+- Laptop.
+- Tablet.
+- Android smartphones.
+- Smaller mobile screens.
+
+The target users are farmers in Bangladesh.
+
+Mobile-first design is essential.
+
+## Desktop
+
+- Compact sidebar.
+- Clear dashboard hierarchy.
+- Proper use of available width.
+- Balanced cards.
+- Attractive visualizations.
+
+## Mobile
+
+- Compact bottom navigation.
+- Large touch targets.
+- Simple task cards.
+- Minimal horizontal scrolling.
+- Clear Bengali text.
+- Easily accessible urgent tasks.
+- Efficient image loading.
+
+Do not simply shrink the desktop layout.
+
+Create an appropriate mobile experience.
+
+---
+
+# SECTION 21: TECHNICAL IMPLEMENTATION REQUIREMENTS
+
+You are working inside an existing Google AI Studio application.
+
+Use the actual existing technology stack.
+
+Before modifying code, inspect the current application structure.
+
+Implement the redesign using the existing framework and components where appropriate.
+
+### Required Technical Principles
+
+1. Preserve functional existing workflows.
+2. Use reusable components.
+3. Maintain consistent styling.
+4. Keep the UI modular.
+5. Avoid unnecessary dependencies.
+6. Keep the code maintainable.
+7. Maintain data integrity.
+8. Ensure all interactive buttons work.
+9. Ensure navigation works.
+10. Ensure forms validate input.
+11. Ensure task statuses update correctly.
+12. Ensure visual metrics are derived from actual records.
+13. Avoid hardcoded production data.
+14. Keep API credentials secure.
+15. Do not expose AI API keys in the frontend.
+16. Do not claim backend functionality when only mock data exists.
+
+### Shared Components to Consider
+
+- FarmerDashboard.
+- FarmIdentityCard.
+- BioShieldProgressCard.
+- BioShieldLoopVisualization.
+- ProtectionDomainCard.
+- PriorityTaskCard.
+- TaskDetailDrawer.
+- TaskStatusBadge.
+- AnimalCard.
+- FlockCard.
+- CareCalendar.
+- DiseaseAlertCard.
+- VeterinarySupportCard.
+- AIChatInterface.
+- NotificationCard.
+- ProgressRing.
+- EmptyStateIllustration.
+
+These are conceptual component names.
+
+Adapt them to the actual source code.
+
+### Data Integration
+
+The following data must be connected where the architecture supports it:
+
+Farm Records → Animal / Flock Records → Health Records → Preventive Care → Protection Signals → BioShield Tasks → Completion / Verification → Dashboard Progress.
+
+Disease Alerts and Weather Advisories should feed the task engine only when relevant and appropriately reviewed.
+
+Avoid creating separate disconnected data systems for each module.
+
+---
+
+# SECTION 22: FUNCTIONAL ACCEPTANCE TESTS
+
+After implementing the redesign, test the following.
+
+## Dashboard
+
+- Does it display the correct farm information?
+- Does it show actual task counts?
+- Are overdue tasks visually prominent?
+- Do task filters work?
+- Can the farmer open task details?
+- Do task CTAs work?
+- Does the BioShield progress indicator calculate correctly?
+
+## BioShield Loop
+
+- Can an assessment identify a protection need?
+- Can the system determine an explainable priority?
+- Can a task be generated?
+- Can the task be assigned?
+- Can the farmer start the task?
+- Can the farmer mark it as completed?
+- Can evidence be recorded?
+- Can verification status be updated?
+- Does the dashboard reflect the outcome?
+
+## Farm and Animal Management
+
+- Can an animal be registered?
+- Can a flock be registered?
+- Are records saved?
+- Are records associated with the correct farm?
+- Can the animal profile be opened?
+- Are relevant care records visible?
+
+## Care Calendar
+
+- Can the calendar display records?
+- Can events be opened?
+- Are completed and overdue events differentiated?
+- Does the calendar respond to actual data?
+
+## Information Center
+
+- Are disease advisories properly sourced?
+- Are unverified reports distinguished?
+- Can relevant advisories generate tasks?
+- Are unrelated alerts excluded from farmer-specific actions?
+
+## Veterinary Support
+
+- Can the farmer submit a consultation request?
+- Is the request status recorded?
+- Does the application clearly distinguish actual service availability from a demo?
+
+## Responsiveness
+
+- Does the interface work on desktop?
+- Does the interface work on mobile?
+- Are all important actions accessible?
+- Are there layout overflow problems?
+
+Do not consider the redesign complete merely because the interface looks attractive.
+
+---
+
+# SECTION 23: REQUIRED IMPLEMENTATION WORKFLOW
+
+Follow this sequence.
+
+### Phase 1: Existing Application Audit
+
+Inspect the source code and current prototype.
+
+Identify existing reusable components.
+
+### Phase 2: Design System
+
+Establish the colors, typography, card styles, spacing, icon system, and visual hierarchy.
+
+### Phase 3: Sidebar and Navigation Redesign
+
+Consolidate the navigation structure.
+
+### Phase 4: Farmer Dashboard Redesign
+
+Build the Farmer Action Center.
+
+This is the first major implementation priority.
+
+### Phase 5: BioShield Progress and Loop
+
+Implement the visual BioShield progress card and the interactive four-stage workflow.
+
+### Phase 6: Farm and Animal Management Redesign
+
+Implement the visual animal cards, registration flows, and animal profiles.
+
+### Phase 7: Care Calendar and Preventive Healthcare
+
+Implement the calendar visualization and relevant task integration.
+
+### Phase 8: Support and Information Centers
+
+Redesign the AI education assistant, veterinary support, DLS information, disease advisories, and notifications.
+
+### Phase 9: Secondary Modules
+
+Improve the protocol library, USSD demo, and roadmap.
+
+### Phase 10: Testing and Stabilization
+
+Test all major workflows.
+
+Fix functional issues, responsive problems, and visual inconsistencies.
+
+---
+
+# SECTION 24: FINAL DESIGN QUALITY STANDARD
+
+The final application must satisfy the following standards.
+
+### Visual Quality
+
+The interface should feel like a premium, modern AgriTech product.
+
+### Usability
+
+A farmer should understand the most important task without needing technical knowledge.
+
+### Accessibility
+
+The application should use simple Bengali, appropriate visual cues, and accessible interaction patterns.
+
+### Innovation
+
+The BioShield Loop should be clearly recognizable as the central operational mechanism.
+
+### Integration
+
+Farm management, preventive healthcare, disease information, and biosecurity should feed into a connected protection workflow.
+
+### Scientific Integrity
+
+The application must avoid misleading risk scores, unsupported veterinary claims, and false protection guarantees.
+
+### Functional Integrity
+
+All implemented buttons, forms, navigation elements, and task workflows must work as intended.
+
+### Competition-Level Presentation
+
+The application should communicate the innovation clearly and professionally to:
+
+- Farmers.
+- Veterinary professionals.
+- Innovation competition judges.
+- Investors.
+- Institutional partners.
+- Technical evaluators.
+
+Do not design only for a competition presentation.
+
+Design for actual farmer use.
+
+---
+
+# SECTION 25: FINAL EXECUTION INSTRUCTION
+
+Now begin.
+
+First inspect the existing Google AI Studio application and its source code.
+
+Then implement the redesigned application directly within the current project.
+
+Do not merely give me a list of suggestions.
+
+Do not stop after generating a design proposal.
+
+Do not rebuild the application from scratch without justification.
+
+Do not create disconnected visual components.
+
+Do not use arbitrary progress percentages.
+
+Do not invent official disease alerts, real hotline numbers, or actual service availability.
+
+Do not remove existing important functionality.
+
+Prioritize the Farmer Action Center, BioShield Progress Visualization, BioShield Loop, and the integrated protection task system.
+
+Use realistic demo data only where necessary, clearly identify it as demo data, and maintain the existing application structure wherever practical.
+
+If you encounter a technical limitation, explain it and implement the best feasible alternative.
+
+After implementation, provide:
+
+1. Summary of the redesign.
+2. List of modified components.
+3. List of preserved existing functionality.
+4. List of newly implemented interactions.
+5. Functional testing results.
+6. Remaining limitations.
+7. Recommended next development phase.
+
+**The final result must be a coherent, beautiful, action-oriented, visually engaging, and functional Khamar Shurokkha application in which BioShield is the central farm-protection framework and BioShield Loop drives the daily actions of the farmer.**
+
+The farmer must open the application and immediately understand:
+
+"আজ আমার খামারের সুরক্ষার জন্য কী করতে হবে, কেন করতে হবে, কীভাবে করতে হবে, এবং কাজটি সম্পন্ন হয়েছে কি না।"
+
+This is the ultimate product objective.

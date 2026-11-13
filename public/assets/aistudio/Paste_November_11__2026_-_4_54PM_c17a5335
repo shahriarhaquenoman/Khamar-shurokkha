@@ -1,0 +1,1921 @@
+MASTER PRODUCT REBUILD PROMPT
+
+খামার সুরক্ষা (KHAMAR SHUROKKHA)
+
+Bangladesh's Integrated Multi-Species Farm Identity, Animal Health, Preventive Care & Early-Warning Platform
+
+---
+
+PART 1 — YOUR ROLE
+
+Act as a world-class multidisciplinary product development team consisting of:
+
+1. A top-tier full-stack software architect.
+2. A senior React, TypeScript and Firebase developer.
+3. A world-class mobile-first UI/UX designer.
+4. An AgriTech and LivestockTech product strategist.
+5. A veterinary technology product consultant.
+6. A digital health and preventive-care workflow architect.
+7. An AI integration specialist experienced with Gemini API and n8n.
+8. A database architect specializing in multi-tenant farm management systems.
+9. A product accessibility designer for rural and low-literacy users.
+10. A technology startup and innovation competition product reviewer.
+
+You are not being asked to produce a generic agricultural website.
+
+You are being asked to transform the EXISTING Google AI Studio application into a comprehensive, visually engaging, mobile-first farm management and animal-health platform for smallholder farmers in Bangladesh.
+
+Think like a product architect, not merely a page designer.
+
+First inspect the existing project, its structure, components, routes, and working functionality. Then restructure it around the new product architecture described below.
+
+Preserve useful existing work where appropriate, but do not allow the previous poultry-only biosecurity architecture to constrain the new product.
+
+Do not simply append new cards to the old dashboard.
+
+Reorganize the entire information architecture, navigation, data model, user workflows, and visual design.
+
+Do not stop after creating a landing page or dashboard. Build a complete, clickable, interactive prototype with functional demonstration workflows.
+
+---
+
+PART 2 — PRODUCT IDENTITY
+
+Official Bengali Product Name
+
+খামার সুরক্ষা
+
+English Name:
+Khamar Shurokkha
+
+Bengali Tagline:
+আপনার খামার, প্রতিদিনের যত্ন।
+
+English Tagline:
+Your Farm. Everyday Care.
+
+Product Category:
+Integrated Farm Identity, Livestock Health Management, Preventive Care, Biosecurity and Early-Warning Platform.
+
+Core Vision:
+
+To help smallholder farmers in Bangladesh manage their farms, identify their animals, remember preventive-care activities, receive understandable animal-health guidance, and access appropriate veterinary support through one easy-to-use digital platform.
+
+Core Mission:
+
+Make essential farm-management and preventive animal-health information accessible, understandable, and actionable for farmers through mobile-first digital services.
+
+The application must not be designed only for poultry farms.
+
+It must support multiple livestock and poultry species through a common farm-management architecture.
+
+---
+
+PART 3 — THE FUNDAMENTAL PRODUCT ARCHITECTURE
+
+Build the application around these seven interconnected pillars:
+
+1. Farm Identity and Registration
+2. Animal and Flock Identity Management
+3. Preventive Animal Health Management
+4. Vaccination and Deworming Calendar
+5. AI-Powered Primary Guidance
+6. Veterinary Services and Professional Support
+7. Biosecurity, Regional Alerts and Early Warning
+
+Supporting capabilities:
+
+- Notifications and daily tasks
+- Weather information
+- Farm records and reporting
+- Offline-friendly data entry
+- Future SMS, voice and USSD services
+- Administrative and veterinary management portal
+
+The platform should feel like one connected system rather than a collection of disconnected features.
+
+For example:
+
+A farmer registers a farm → registers cattle and goats → creates animal profiles → receives expert-configured preventive-care reminders → records vaccinations → receives the next appropriate reminder → asks the AI assistant a general animal-health question → requests a veterinary consultation when necessary.
+
+The same system must also support poultry farms using Flock IDs and batch records.
+
+---
+
+PART 4 — TARGET USERS AND ACCESS LEVELS
+
+Build the product with separate user roles.
+
+A. Farmer
+
+The main user.
+
+Can:
+
+- Register and manage farms.
+- Register animals and poultry flocks.
+- View animal profiles.
+- Record vaccination and deworming history.
+- View upcoming preventive-care tasks.
+- Receive notifications.
+- Submit animal-health event reports.
+- Use the AI guidance assistant.
+- Request veterinary consultations.
+- View farm information and reports.
+- Manage personal notification preferences.
+
+B. Veterinary Professional
+
+A separate professional interface.
+
+Can:
+
+- View assigned consultation requests.
+- Review farmer-submitted health information.
+- Review animal histories shared with them.
+- Record consultation notes.
+- Add or approve care instructions.
+- Review vaccination and deworming records.
+- Mark a submitted health event as reviewed.
+- Escalate cases when further examination is necessary.
+
+Only authorized professionals should be permitted to approve veterinary protocols or professional records.
+
+C. Platform Administrator
+
+A separate administration interface.
+
+Can:
+
+- Manage registered accounts and farms.
+- Manage authorized veterinary users.
+- Configure species-specific care templates.
+- Review system activity.
+- Manage approved health information.
+- Publish regional information.
+- Review reported health events.
+- Manage service requests.
+- Configure notification templates.
+
+D. Advisor / Expert Review
+
+Create a restricted demonstration area where authorized experts can inspect:
+
+- Preventive-care rules.
+- Vaccination template versions.
+- Deworming protocol versions.
+- AI guidance boundaries.
+- Alert verification processes.
+- Action recommendation logic.
+
+This is particularly important for advisor presentations.
+
+---
+
+PART 5 — MULTI-SPECIES SUPPORT
+
+The system must be designed around a scalable species registry.
+
+Initial supported species:
+
+Large ruminants
+
+- Cattle
+- Buffalo
+
+Small ruminants
+
+- Goat
+- Sheep
+
+Poultry
+
+- Chicken
+- Duck
+
+Allow the administrator to add additional species in the future without redesigning the entire system.
+
+Different identity models
+
+This is a fundamental requirement.
+
+Individual Animal ID
+
+For:
+
+- Cattle
+- Buffalo
+- Goat
+- Sheep
+
+Each animal must have an independent profile and a unique Animal ID.
+
+Example IDs:
+KS-CAT-0001
+KS-BUF-0001
+KS-GOT-0001
+KS-SHP-0001
+
+These are illustrative IDs only.
+
+The farmer should be able to register an animal, edit its details, update its status, archive it, and view its history.
+
+Each animal profile should include:
+
+- Animal ID
+- Species
+- Name or local identification name
+- Breed
+- Sex
+- Date of birth or estimated age
+- Identification tag number, if available
+- Date of purchase or acquisition, if applicable
+- Current health status as reported by the farmer
+- Production or reproductive information, where relevant
+- Vaccination history
+- Deworming history
+- Health-event history
+- Notes
+- Optional animal photograph
+
+Do not require every field to register an animal.
+
+Use a simple registration wizard.
+
+Flock / Batch ID
+
+For:
+
+- Broiler
+- Layer
+- Sonali
+- Duck
+- Other poultry groups
+
+Do not create individual bird IDs for ordinary commercial poultry batches.
+
+Use:
+
+- Flock ID
+- Batch ID
+- Species or poultry type
+- Number of birds
+- Placement date
+- Estimated age
+- Source or supplier, optional
+- Production purpose
+- Housing type
+- Vaccination records
+- Health-event records
+- Mortality records
+- Flock status
+- Archive date
+
+Example:
+KS-FLK-0001
+
+Allow flock size to be updated as birds are added, sold, transferred, or die.
+
+Individual bird-level identification must remain optional and should not be required for the poultry MVP.
+
+Identity visualization
+
+Create an ID card for every registered animal and every poultry flock.
+
+Allow:
+
+- ID card preview.
+- QR-code generation for demonstration.
+- Printable ID card.
+- Animal profile opening through QR scanning where supported.
+- Clear distinction between Animal ID and Flock ID.
+
+Do not claim that generated IDs are official government identification numbers.
+
+---
+
+PART 6 — FARM REGISTRATION AND OWNER ACCOUNT
+
+Build a friendly mobile-first registration process.
+
+Required owner information:
+
+- Owner's name
+- Mobile phone number
+- Optional email
+- District
+- Upazila
+- Preferred language
+- Consent to platform terms and data use
+
+The farmer's phone number should be the main account identifier.
+
+Support:
+
+- Mobile OTP authentication when properly configured.
+- Optional email authentication.
+- Secure logout.
+- Account recovery.
+- Profile editing.
+
+For the prototype:
+
+- Provide a clearly labelled DEMO LOGIN mode.
+- Use fictional demo credentials.
+- Never pretend that a demo OTP is a real SMS verification.
+- Do not store passwords or OTPs in local storage.
+- If Firebase authentication is not configured, show an honest demo sign-in experience.
+
+After registration, the farmer can create one or more farms.
+
+Farm Registration Fields
+
+- Farm name
+- Farm ID
+- Farm owner
+- District
+- Upazila
+- Union / locality, optional
+- Farm type
+- Species present
+- Production purpose
+- Approximate animal or flock count
+- Farm size category
+- Housing system
+- Farm registration date
+- Optional farm photo
+- Optional approximate map location
+
+Farm types can include:
+
+- Dairy
+- Beef
+- Goat
+- Sheep
+- Buffalo
+- Broiler
+- Layer
+- Sonali
+- Duck
+- Mixed livestock and poultry
+
+A single farm may contain several species.
+
+Every farm must receive a unique system-generated Farm ID.
+
+Example:
+KS-FARM-0001
+
+The same owner must be able to manage several farms from one account.
+
+Do not expose exact farm addresses or sensitive location coordinates publicly.
+
+---
+
+PART 7 — NEW MAIN DASHBOARD
+
+Redesign the dashboard completely.
+
+The first screen must answer one question:
+
+"আজ আমার খামারের কী কী কাজ আছে?"
+
+English:
+"What should I do for my farm today?"
+
+This should be an easy-to-understand farmer dashboard, not a complex business analytics dashboard.
+
+Dashboard header
+
+Display:
+
+- Bengali brand name: খামার সুরক্ষা
+- Selected farm
+- Farm ID
+- Owner profile
+- Language selector
+- Notifications
+
+Primary dashboard sections
+
+1. Today's Farm Tasks
+
+Display visual task cards:
+
+- Today's vaccination tasks
+- Upcoming vaccination tasks
+- Due deworming review
+- Overdue preventive-care tasks
+- Follow-up consultation
+- Pending farm-management tasks
+
+Use actual scheduled records.
+
+If no tasks exist, show a friendly empty state.
+
+2. My Animals
+
+Display:
+
+- Total registered animals
+- Cattle
+- Buffalo
+- Goat
+- Sheep
+- Total poultry flocks
+- Total birds
+
+Use clear species illustrations or recognizable icons.
+
+3. Preventive Care Overview
+
+Show:
+
+- Vaccinations due
+- Vaccinations completed
+- Upcoming vaccinations
+- Deworming reviews due
+- Recent care records
+
+4. Farm Health
+
+Show:
+
+- Recent health reports
+- Animals requiring follow-up
+- Veterinary consultation status
+- Current relevant regional information
+
+Do not automatically describe the farm as healthy or disease-free.
+
+5. Quick Actions
+
+Use large, visual buttons:
+
+- প্রাণী যোগ করুন
+- নতুন ফ্লক তৈরি করুন
+- টিকা রেকর্ড করুন
+- কৃমিনাশক রেকর্ড করুন
+- স্বাস্থ্য সমস্যা জানান
+- AI সহায়তা নিন
+- ভেটেরিনারি সেবা নিন
+- বায়োসিকিউরিটি যাচাই করুন
+
+Use large touch-friendly cards with an icon, short Bengali label, and optional spoken explanation.
+
+---
+
+PART 8 — ANIMAL AND FLOCK MANAGEMENT
+
+Create a dedicated section:
+
+"আমার প্রাণী ও ফ্লক"
+
+The farmer should be able to switch between:
+
+- Individual Animals
+- Poultry Flocks
+
+Add species filters and search.
+
+Use image-based species cards.
+
+Individual animal registration workflow
+
+Step 1:
+Select species.
+
+Step 2:
+Enter basic identification details.
+
+Step 3:
+Add optional age, breed, sex, and identification tag.
+
+Step 4:
+Add an optional photograph.
+
+Step 5:
+Save and generate Animal ID.
+
+Animal profile screen
+
+Every animal needs a visually rich profile page.
+
+Profile header:
+
+- Animal image
+- Animal ID
+- Animal name
+- Species
+- Breed
+- Age
+- Current status
+
+Profile tabs:
+
+1. Overview
+2. Vaccination
+3. Deworming
+4. Health History
+5. Production / Reproduction (when relevant)
+6. Notes
+
+Provide a simple chronological timeline.
+
+Example:
+
+Animal KS-CAT-0001
+
+- Registered
+- Vaccination recorded
+- Deworming recorded
+- Health event submitted
+- Veterinary consultation completed
+
+Show only information that actually exists.
+
+Flock profile
+
+Create similar profiles for poultry batches.
+
+Display:
+
+- Flock ID
+- Species/type
+- Bird count
+- Placement date
+- Age
+- Vaccination history
+- Mortality history
+- Health-event history
+- Notes
+
+Do not create bird-level records unless explicitly selected as an optional advanced feature.
+
+---
+
+PART 9 — PREVENTIVE ANIMAL HEALTH MANAGEMENT
+
+This must become one of the platform's most important modules.
+
+Create a section:
+
+"প্রতিরোধমূলক প্রাণিস্বাস্থ্য"
+
+Subsections:
+
+1. Vaccination
+2. Deworming
+3. Preventive-care calendar
+4. Health records
+5. Due and overdue tasks
+
+The experience must be understandable to farmers with limited technical knowledge.
+
+Use a visual calendar and straightforward cards.
+
+A. Vaccination Management
+
+The platform should support vaccination planning and record management for:
+
+- Cattle
+- Buffalo
+- Goat
+- Sheep
+- Chicken
+- Duck
+
+The platform must not use a single universal vaccination schedule for every species.
+
+Vaccination schedules must be configured using authorized, expert-reviewed, Bangladesh-relevant protocol templates.
+
+A protocol should be capable of including:
+
+- Species
+- Disease / vaccine purpose
+- Applicable age or life stage
+- Relevant geographic or epidemiological condition
+- First-dose rule
+- Booster rule
+- Subsequent-dose interval
+- Contraindications or caution notes where appropriate
+- Source or guideline reference
+- Version number
+- Effective date
+- Reviewing veterinary professional
+- Approval status
+
+Do not automatically activate unapproved schedules.
+
+Do not assume every animal requires every vaccine.
+
+The system should select an applicable schedule only when the animal's species, age, history, and relevant farm context match an approved rule.
+
+If the information is insufficient, display:
+"বিশেষজ্ঞের পরামর্শ প্রয়োজন"
+
+Never silently invent a vaccination interval.
+
+Vaccination reminder workflow
+
+Example:
+
+A farmer registers an animal.
+
+The system checks:
+
+- Species
+- Age
+- Available vaccination history
+- Relevant approved protocol
+- Applicable region, if required
+
+If an approved rule applies, the system creates a scheduled care task.
+
+Display:
+
+- Upcoming vaccination
+- Due date
+- Purpose
+- Relevant animal or flock
+- Guidance on where to obtain veterinary or vaccination assistance
+
+The farmer should be able to:
+
+- Mark vaccination as completed.
+- Reschedule a reminder where permitted.
+- Record that the animal missed a scheduled vaccination.
+- Request veterinary assistance.
+- View previous vaccination records.
+
+For a completed vaccination record, store:
+
+- Animal ID or Flock ID
+- Vaccine purpose / disease
+- Date administered
+- Administrator or provider, if known
+- Vaccine product or batch information, optional
+- Next due date, only where supported by the approved protocol
+- Notes
+
+Do not automatically decide a drug or vaccine dose.
+
+Do not instruct users to purchase or administer vaccines without considering proper veterinary and product guidance.
+
+B. Deworming Management
+
+Build a separate deworming management module.
+
+It must include:
+
+- Due-date reminders based on approved protocols.
+- Previous deworming record.
+- Animal or flock selection.
+- Species and age information.
+- Last recorded deworming date.
+- Veterinary recommendations, where available.
+- Follow-up reminders.
+- Ability to record an actual treatment event.
+
+IMPORTANT:
+
+Do not hard-code "deworm all cattle twice per year" as a universal rule.
+
+Deworming frequency must be configurable and reviewed by veterinary professionals according to relevant parasite risks, age, geographic context, production stage, and clinical or diagnostic information where available.
+
+The prototype should support:
+
+- Expert-defined calendar-based plans.
+- Risk-based review reminders.
+- Veterinary-directed individual plans.
+
+The system must not independently prescribe an anthelmintic, calculate a drug dose, or recommend repeated medication without appropriate professional guidance.
+
+A deworming record may contain:
+
+- Animal ID / Flock ID
+- Date
+- Product name, if supplied by the farmer or veterinarian
+- Treatment record status
+- Administrator
+- Notes
+- Next review date, only when authorized by the applicable plan
+
+Do not invent a drug withdrawal period. Display product-specific professional guidance where applicable.
+
+C. Preventive Care Calendar
+
+Create:
+
+- Monthly calendar
+- Weekly agenda
+- Upcoming tasks
+- Overdue tasks
+- Completed tasks
+
+Use visual status indicators:
+
+Green:
+Completed
+
+Amber:
+Due soon
+
+Red:
+Overdue or requiring attention
+
+Blue:
+Upcoming
+
+Always include text labels so that users do not depend only on colors.
+
+---
+
+PART 10 — NOTIFICATION AND REMINDER ENGINE
+
+Build a centralized notification system.
+
+This is essential because the platform's main value is helping farmers remember important tasks.
+
+Notification types
+
+1. Vaccination reminder
+2. Deworming review reminder
+3. Follow-up care reminder
+4. Veterinary consultation update
+5. Health-event update
+6. Regional disease alert
+7. Weather information
+8. Farm task reminder
+9. Platform announcement
+
+In-app notification center
+
+Create:
+
+- Notification list
+- Read / unread status
+- Notification categories
+- Date and time
+- Related animal or flock
+- Clear action button
+
+Notification scheduling logic
+
+Notifications must be generated from actual scheduled records.
+
+Examples:
+
+- Upcoming approved vaccination.
+- Approved preventive-care task due.
+- Overdue task.
+- Follow-up date set by a veterinarian.
+- New verified regional alert.
+
+Do not create arbitrary daily notifications simply to make the application look active.
+
+Let users control notification frequency and channels.
+
+Future delivery channels
+
+Architect the application so it can support:
+
+- In-app notifications
+- Push notifications
+- SMS
+- Voice calls / IVR
+- USSD
+
+For the prototype, use simulated notification delivery.
+
+Clearly mark the delivery status:
+
+- Simulated
+- Queued
+- Sent (only when genuinely sent through an integrated service)
+- Failed
+
+Do not claim that a farmer received an SMS or phone call when the system only created an in-app notification.
+
+---
+
+PART 11 — AI PRIMARY VETERINARY GUIDANCE ASSISTANT
+
+Create a major feature named:
+
+"AI প্রাণিস্বাস্থ্য সহায়ক"
+
+English:
+AI Animal Health Assistant
+
+The assistant should be accessible through a prominent button on the dashboard.
+
+It should work as a first-level information and guidance service, not as an autonomous veterinarian.
+
+Main responsibilities
+
+The assistant can:
+
+- Explain basic animal-care concepts.
+- Provide general preventive guidance.
+- Explain the purpose of common vaccination programs.
+- Explain why timely deworming review matters.
+- Guide farmers through basic biosecurity practices.
+- Explain general housing, feeding, hygiene and management practices.
+- Help farmers organize information about an animal-health concern.
+- Ask relevant follow-up questions.
+- Summarize the farmer's concern.
+- Recommend when veterinary examination is needed.
+- Help users find the veterinary service section.
+- Help farmers understand their scheduled tasks.
+
+Context-aware assistance
+
+When the user starts a conversation from an animal profile, provide that animal's approved and relevant context to the assistant.
+
+Example:
+
+Animal ID: KS-CAT-0001
+Species: Cattle
+Age: 18 months
+Last recorded vaccination: [actual record, if available]
+Last recorded deworming: [actual record, if available]
+
+The assistant may use this information to make its general explanation more relevant.
+
+Never fabricate missing information.
+
+If information is missing, say so and ask the farmer to provide it.
+
+Safety boundaries
+
+The assistant must NOT:
+
+- Claim to confirm a disease diagnosis.
+- Prescribe medicines.
+- Recommend antibiotics.
+- Provide unsupported drug dosages.
+- Claim to replace a veterinary examination.
+- Invent vaccination schedules.
+- Invent deworming intervals.
+- Recommend unapproved treatment.
+- Claim a disease outbreak based on an unverified report.
+
+The assistant may explain general prevention and first-response steps, but must escalate suspected serious cases to a veterinary professional.
+
+High-priority situations include:
+
+- Sudden or unusual deaths.
+- Multiple animals becoming seriously ill.
+- Difficulty breathing.
+- Severe bleeding.
+- Suspected poisoning.
+- Severe injury.
+- Neurological signs.
+- Severe dehydration or inability to stand.
+- Rapidly spreading signs across a flock or herd.
+
+In such situations:
+
+1. Clearly state that urgent veterinary assessment is needed.
+2. Provide safe, general immediate precautions.
+3. Recommend limiting unnecessary animal movement where appropriate.
+4. Guide the farmer to contact a veterinarian or relevant livestock service.
+5. Avoid recommending medication.
+
+Language and accessibility
+
+The assistant should support:
+
+- Simple Bangla
+- English
+- Voice input where available
+- Voice output where supported
+- Short responses
+- Visual instructions
+- Large suggested-question buttons
+
+Suggested buttons:
+
+- আমার গরুর যত্ন কীভাবে নেব?
+- টিকার সময় কীভাবে জানব?
+- কৃমিনাশক সম্পর্কে জানতে চাই
+- আমার প্রাণী অসুস্থ মনে হচ্ছে
+- পশু চিকিৎসকের সাথে যোগাযোগ করতে চাই
+
+AI integration architecture
+
+Prepare the backend for:
+
+- Gemini API
+- n8n workflow automation
+- Secure API communication
+
+IMPORTANT:
+Never expose a production Gemini API key in client-side code.
+
+Use a secure server-side endpoint or backend function.
+
+Design a replaceable AI service layer so the underlying model or provider can be changed later.
+
+Prepare a configurable n8n webhook integration.
+
+If no API key or webhook is configured:
+
+- Show a functional demonstration chatbot using safe, predefined demo responses.
+- Label it "Demo AI Assistant".
+- Do not pretend that a live Gemini connection exists.
+
+Provide a clear error or configuration state when an integration is unavailable.
+
+---
+
+PART 12 — 24/7 VETERINARY SERVICES
+
+Create a dedicated section:
+
+"ভেটেরিনারি সেবা"
+
+This should be a major product pillar.
+
+The objective is to connect farmers with qualified veterinary professionals.
+
+Service interface
+
+Show:
+
+- Available veterinary services
+- Veterinary professional profiles, when verified
+- Consultation types
+- Service availability
+- Request consultation button
+- Request status
+- Consultation history
+- Contact / hotline information, only when configured
+
+Consultation workflow
+
+Step 1:
+Select an animal or flock.
+
+Step 2:
+Select the reason for consultation.
+
+Step 3:
+Submit a short description.
+
+Step 4:
+Optionally attach a photo or other relevant information.
+
+Step 5:
+Choose consultation preference:
+
+- Phone call
+- Online consultation
+- In-person / farm visit, if offered
+
+Step 6:
+Submit the request.
+
+Show request status:
+
+- Submitted
+- Waiting for Review
+- Accepted
+- Consultation Scheduled
+- Completed
+- Cancelled
+
+Paid consultation architecture
+
+Design the system to support paid veterinary services in the future.
+
+Prepare:
+
+- Service type
+- Consultation fee
+- Payment status
+- Booking ID
+- Receipt
+- Refund / cancellation policy field
+
+However, do not invent real consultation fees.
+
+If payment is not integrated, label the flow:
+"Payment integration planned."
+
+Do not activate a fake payment gateway.
+
+24/7 service honesty
+
+The platform may have a future 24/7 veterinary support vision.
+
+Do not display "Veterinarian Available 24/7" unless a verified operational veterinary team actually provides continuous service.
+
+Until then, display:
+"Veterinary consultation service"
+and show actual operating hours or request status.
+
+A hotline number must remain a configurable field. Never invent a real phone number.
+
+---
+
+PART 13 — REGIONAL DISEASE INFORMATION AND EARLY WARNING
+
+Create a section:
+
+"আমার এলাকার প্রাণিস্বাস্থ্য আপডেট"
+
+English:
+Local Animal Health Updates
+
+The purpose is to help farmers understand relevant animal-health information in their area.
+
+Regional targeting
+
+Use the farmer's selected:
+
+- District
+- Upazila
+- Optional union / locality
+
+Do not publicly show exact farm coordinates.
+
+Alert types
+
+- Official livestock disease notices
+- Veterinary authority announcements
+- Verified regional health alerts
+- Expert-reviewed public advisory
+- Farmer-submitted health-event reports
+- Weather-related farm-management notices
+
+Alert verification system
+
+Every health event must have a clear status:
+
+1. Reported
+2. Under Review
+3. Verified
+4. Confirmed by Authorized Authority
+5. Closed / Resolved
+
+A farmer-submitted report is NOT a confirmed outbreak.
+
+Several reports in the same area do not automatically prove an outbreak.
+
+Do not display an alert as confirmed unless the relevant authorized verification process has established that status.
+
+Alert card design
+
+Display:
+
+- Alert title
+- Species affected
+- Area
+- Date
+- Source
+- Verification status
+- Last updated
+- Recommended precautionary action
+- Official source link, when available
+
+Official information integration
+
+Design a replaceable data-source layer for future integration with:
+
+- Department of Livestock Services (DLS) publications and notices.
+- Authorized veterinary authorities.
+- Official outbreak or disease notifications.
+- Approved livestock information sources.
+
+If no live government data feed or API is configured:
+
+- Do not scrape or fabricate current outbreak reports.
+- Display verified manually entered content or clearly labelled demo alerts.
+- Show source and last-updated time.
+- Show an honest "Live data connection unavailable" message if appropriate.
+
+Do not claim direct government database integration without authorization.
+
+---
+
+PART 14 — WEATHER AND FARM MANAGEMENT INFORMATION
+
+Create a dedicated weather card.
+
+Display where a reliable weather source is configured:
+
+- Temperature
+- Rainfall probability or forecast
+- Humidity, where available
+- Weather alerts
+- Last updated time
+- Location used
+
+Provide general farm-management information based on weather context, such as:
+
+- Heat-stress awareness.
+- Clean and dry housing.
+- Ventilation.
+- Water availability.
+- Rain-related housing management.
+
+Do not claim that a weather condition confirms a disease risk.
+
+Do not generate veterinary recommendations from weather alone.
+
+If no live weather API is configured, display a demo weather state clearly marked as simulated.
+
+---
+
+PART 15 — BIOSECURITY AND FARM PROTECTION MODULE
+
+Biosecurity remains a core module, but it is now part of the wider platform.
+
+Create a section:
+
+"খামারের বায়োসিকিউরিটি"
+
+Include:
+
+- Visitor control
+- Sick animal isolation
+- Hand hygiene
+- Footwear hygiene
+- Cleaning and disinfection
+- Feed and water protection
+- Pest and wild-bird control
+- Carcass and waste management
+- Animal separation
+- Vehicle and equipment hygiene
+
+Allow species-appropriate audit templates.
+
+Do not use the same detailed audit for every livestock species without review.
+
+Preserve the original MVP's core capabilities:
+
+- Simple biosecurity audit
+- Critical-risk guidance
+- Resource-adaptive corrective action planner
+- Action tracking
+- Recurring unresolved issue history
+- Transparent recommendation explanation
+
+The biosecurity module should connect to farm, animal, and flock records where relevant.
+
+Do not claim that completing an audit guarantees a disease-free farm.
+
+---
+
+PART 16 — USSD AND BASIC MOBILE PHONE ACCESS
+
+This is an important future accessibility feature.
+
+The platform should be designed to serve farmers who do not own smartphones or have reliable mobile internet.
+
+Create a dedicated section:
+
+"USSD সেবা"
+
+Build a simulated USSD interface inside the prototype.
+
+Do not claim that a real telecom USSD service is active.
+
+Use a placeholder code such as *XXX#.
+
+Do not invent an assigned Bangladesh telecom short code.
+
+Proposed USSD menu
+
+Welcome to খামার সুরক্ষা
+
+1. আজকের কাজ দেখুন
+2. টিকার সময় দেখুন
+3. কৃমিনাশক রেকর্ড দেখুন
+4. প্রাণী / ফ্লকের তথ্য
+5. স্বাস্থ্য সমস্যা জানান
+6. ভেটেরিনারি সেবা
+7. এলাকার সতর্কতা
+8. ভাষা পরিবর্তন
+
+Use short menu levels suitable for basic mobile phones.
+
+The user should be able to navigate using numeric choices.
+
+Keep each menu short and avoid complicated forms.
+
+USSD workflow demonstrations
+
+Allow the advisor to simulate:
+
+- Selecting a farm.
+- Checking upcoming tasks.
+- Viewing vaccination reminders.
+- Reporting a basic health concern.
+- Requesting a callback.
+- Changing language.
+
+Backend integration readiness
+
+Create a service adapter architecture for future connection to:
+
+- Telecom USSD gateway.
+- SMS gateway.
+- IVR / voice system.
+- Backend notification engine.
+
+Do not implement a fake live telecom gateway.
+
+Mark the feature:
+"Prototype Simulation — Telecom Integration Planned."
+
+The platform must be able to associate verified phone numbers with a farmer account when real authentication and telecom integration are added.
+
+---
+
+PART 17 — NOTIFICATION PREFERENCES
+
+Create a simple farmer-friendly notification settings page.
+
+Options:
+
+- In-app notification
+- SMS (future integration)
+- Voice / IVR (future integration)
+- USSD access (future integration)
+- Optional daily summary
+- Reminder preferences
+- Language preferences
+
+The farmer should be able to control non-urgent reminders.
+
+Urgent professional instructions and critical warnings must be clearly distinguished from general promotional or routine messages.
+
+Never generate endless notifications.
+
+---
+
+PART 18 — VISUAL DESIGN SYSTEM
+
+This is one of the highest-priority requirements.
+
+Design for real smallholder farmers, not just university judges.
+
+The application should have a premium, trustworthy AgriTech interface while remaining extremely easy to understand.
+
+Brand design
+
+Brand:
+খামার সুরক্ষা
+
+Primary color:
+Deep Forest Green — #14532D
+
+Secondary:
+Agriculture Green — #16A34A
+
+Background:
+Soft warm off-white — #F8FAFC
+
+Surface:
+White — #FFFFFF
+
+Primary text:
+Dark slate — #1E293B
+
+Warning:
+Amber
+
+Critical:
+Red
+
+Information:
+Blue
+
+Use consistent design tokens.
+
+Typography
+
+Use a highly readable Bengali-supporting font.
+
+Preferred fonts:
+
+- Hind Siliguri
+- Noto Sans Bengali
+
+Use appropriate fallback fonts if external font loading is unavailable.
+
+Typography must be:
+
+- Large enough for older farmers.
+- Clear on low-resolution mobile screens.
+- Consistent.
+- Not overly decorative.
+
+Low-literacy visual design
+
+Do not make text the only way to understand an action.
+
+Use:
+
+- Recognizable species illustrations.
+- Large icons.
+- Short Bengali labels.
+- Illustrated step-by-step guidance.
+- Clear status labels.
+- Voice-assisted explanations where supported.
+- Short audio guidance controls.
+- Large touch targets.
+
+Every icon must have a text label or accessible description.
+
+Never depend only on color.
+
+Use friendly illustrations for:
+
+- Cattle
+- Buffalo
+- Goat
+- Sheep
+- Chicken
+- Duck
+- Vaccination
+- Deworming
+- Water
+- Feed
+- Farm hygiene
+- Veterinarian
+- Weather
+- Alerts
+
+Use high-quality illustrations or appropriate visual assets. Avoid cartoon-like childish design.
+
+Mobile-first principles
+
+The application must be designed for smartphone screens first.
+
+Use:
+
+- Bottom navigation
+- Large primary action buttons
+- Simple cards
+- Clear back navigation
+- Short multi-step forms
+- Minimal typing
+- Readable forms
+- Responsive lists
+- Touch-friendly interactions
+
+Desktop can use a professional sidebar and expanded dashboard.
+
+The mobile interface should not simply be a compressed desktop dashboard.
+
+Navigation
+
+Farmer navigation:
+
+1. হোম
+2. আমার খামার
+3. প্রাণী
+4. ক্যালেন্ডার
+5. সহায়তা
+
+Additional features should be accessed through clear dashboard cards and a simple menu.
+
+Professional/admin navigation should be different from farmer navigation.
+
+---
+
+PART 19 — BANGLA AND ENGLISH LANGUAGE SYSTEM
+
+The official brand displayed by default must always be:
+
+খামার সুরক্ষা
+
+Default application language:
+বাংলা
+
+Provide a language toggle:
+বাংলা | English
+
+When English is selected, display:
+Khamar Shurokkha
+
+Translate all key navigation, forms, buttons, notifications, dashboard cards, status labels, and help content.
+
+Use simple and natural Bangladesh-oriented Bangla.
+
+Avoid unnecessarily formal or difficult language.
+
+Allow the user to change language at any time.
+
+Persist the preferred language.
+
+---
+
+PART 20 — DATABASE AND TECHNICAL ARCHITECTURE
+
+Create a scalable and well-structured data model.
+
+Recommended core entities:
+
+1. USERS
+2. FARMS
+3. FARM_MEMBERS
+4. ANIMALS
+5. FLOCKS
+6. SPECIES
+7. PREVENTIVE_PROTOCOLS
+8. PROTOCOL_VERSIONS
+9. SCHEDULED_CARE_TASKS
+10. VACCINATION_RECORDS
+11. DEWORMING_RECORDS
+12. HEALTH_EVENTS
+13. BIOSECURITY_AUDITS
+14. ACTION_PLANS
+15. ACTION_HISTORY
+16. NOTIFICATIONS
+17. REGIONAL_ALERTS
+18. WEATHER_RECORDS
+19. VETERINARY_PROFESSIONALS
+20. VETERINARY_REQUESTS
+21. CONSULTATION_RECORDS
+22. AI_CHAT_SESSIONS
+23. NOTIFICATION_PREFERENCES
+24. ADMIN_ACTIVITY_LOGS
+
+Design the database so that:
+
+- One user can own multiple farms.
+- One farm can contain multiple species.
+- Large and small ruminants can have individual animal records.
+- Poultry can have flock/batch records.
+- Each animal or flock can have multiple health records.
+- Preventive-care tasks can be generated from approved protocol versions.
+- Historical records remain available when schedules are updated.
+- Veterinary professionals have controlled access.
+- Admin users have controlled permissions.
+
+Use clear relationships and appropriate indexes.
+
+Avoid storing all information as one large JSON object.
+
+Backend recommendation
+
+Use Firebase Authentication and Cloud Firestore when available and configured within Google AI Studio.
+
+Use server-side functions for:
+
+- Scheduled reminder generation.
+- Gemini API calls.
+- n8n webhook communication.
+- External API calls.
+- Secure role-based operations.
+
+If Firebase is not configured:
+
+- Build a complete local demo mode.
+- Keep the data service layer modular.
+- Make it possible to migrate from local demo data to Firebase without rewriting the whole UI.
+
+Do not expose private API keys in frontend source code.
+
+Security requirements
+
+Implement or prepare:
+
+- Authentication.
+- Role-based access control.
+- User-specific data permissions.
+- Farm ownership validation.
+- Secure handling of phone numbers.
+- Private animal and farm records.
+- Controlled professional access.
+- Audit logs for administrative changes.
+
+Never show one farmer's private farm data to another farmer.
+
+Use fictional information in the demonstration.
+
+---
+
+PART 21 — INTEGRATION ARCHITECTURE
+
+Prepare the system for future integration without pretending that integrations are active.
+
+Gemini API
+
+Purpose:
+AI animal-health guidance and user assistance.
+
+Use:
+
+- Secure backend endpoint.
+- Server-side API key.
+- Context-aware assistant.
+- Safety instructions.
+- Error handling.
+- Model-independent service layer.
+
+n8n
+
+Purpose:
+Workflow automation.
+
+Potential workflows:
+
+- Scheduled reminders.
+- Notification dispatch.
+- Consultation request notifications.
+- Health-event review notifications.
+- AI chatbot routing.
+- USSD and SMS gateway orchestration.
+
+Use a configurable webhook adapter.
+
+SMS / OTP
+
+Potential provider:
+A Bangladesh-compatible SMS gateway or an approved provider selected during deployment.
+
+The system must not invent a connected provider.
+
+Weather API
+
+Use a replaceable weather data adapter.
+
+Official animal-health information
+
+Use official, permitted sources and authorized data access.
+
+Do not assume public API availability.
+
+Payment provider
+
+Prepare an integration interface for a future Bangladesh-compatible payment service.
+
+Do not activate payment collection without an actual provider integration.
+
+USSD
+
+Use a telecom aggregator or authorized operator integration in the future.
+
+Keep the interface and workflow separate from the actual telecom gateway implementation.
+
+---
+
+PART 22 — DATA ACCURACY AND VETERINARY GOVERNANCE
+
+This requirement is non-negotiable.
+
+Every vaccination schedule, preventive-care template, deworming protocol, and veterinary recommendation must have a responsible information source.
+
+Create a protocol governance system.
+
+Each protocol must contain:
+
+- Title
+- Species
+- Purpose
+- Rule details
+- Source
+- Version
+- Effective date
+- Reviewer
+- Approval status
+- Last updated date
+
+Approval statuses:
+
+- Draft
+- Under Veterinary Review
+- Approved
+- Archived
+
+Only Approved protocols can generate active scheduled care recommendations.
+
+A farmer should not be able to modify an official veterinary protocol.
+
+A veterinary administrator can review and update protocols.
+
+When a protocol changes:
+
+- Do not silently rewrite historical care records.
+- Do not silently change completed vaccination records.
+- Recalculate future reminders only according to the new approved rules.
+- Display the latest protocol version.
+
+All recommendations must distinguish:
+
+- General educational information
+- Expert-approved protocol
+- Farmer-reported record
+- Veterinary-reviewed recommendation
+- Officially verified alert
+
+This distinction must be visible in the UI.
+
+---
+
+PART 23 — ADVISOR DEMO MODE
+
+Create a polished demonstration mode for university advisors and competition judges.
+
+A button should appear on the login page:
+
+"অ্যাডভাইজার ডেমো চালু করুন"
+
+Load a fictional, multi-species demonstration farm.
+
+Example:
+
+Farm Name:
+Green Valley Integrated Farm
+
+Farm ID:
+KS-DEMO-001
+
+Location:
+Habiganj, Bangladesh
+
+Registered animals:
+
+- Two cattle with separate Animal IDs.
+- One goat with an Animal ID.
+- One sheep with an Animal ID.
+- One poultry flock with a Flock ID.
+
+Use fictional demo records.
+
+The demo should contain:
+
+- Different animal profiles.
+- Vaccination history.
+- A pending care reminder.
+- A completed care record.
+- A deworming review reminder.
+- One fictional health-event report.
+- A biosecurity audit.
+- A veterinary request.
+- A simulated regional notice.
+- Sample notification records.
+
+Mark every simulated item clearly.
+
+The advisor should be able to:
+
+1. Open the farm dashboard.
+2. Inspect the animal profiles.
+3. Register a new animal.
+4. Register a poultry flock.
+5. Open the care calendar.
+6. Record a vaccination.
+7. View a deworming reminder.
+8. Ask the AI demo assistant a question.
+9. Submit a simulated veterinary request.
+10. Review a biosecurity audit.
+11. Explore the USSD simulation.
+12. Open the protocol governance panel.
+
+Provide a visible "Reset Demo Data" option.
+
+Do not use real farmer information.
+
+---
+
+PART 24 — PRODUCT ROADMAP SCREEN
+
+Create a visually impressive roadmap page.
+
+Clearly distinguish implemented prototype features from future services.
+
+PHASE 1 — DIGITAL FARM FOUNDATION
+
+- Farmer registration
+- Farm ID
+- Animal ID
+- Flock / Batch ID
+- Multi-species profiles
+- Farm dashboard
+- Health record organization
+
+PHASE 2 — PREVENTIVE ANIMAL HEALTH
+
+- Expert-reviewed vaccination protocols
+- Deworming management
+- Preventive-care calendar
+- Automated reminder engine
+- Health history
+- Care record management
+
+PHASE 3 — DIGITAL GUIDANCE AND PROFESSIONAL SUPPORT
+
+- Gemini-powered AI guidance
+- n8n workflow automation
+- Veterinary consultation requests
+- Professional dashboard
+- Paid service integration
+
+PHASE 4 — CONNECTED FARM PROTECTION
+
+- Verified regional animal-health alerts
+- Weather information
+- Improved biosecurity workflow
+- Early-warning support
+- Responsible health-event reporting
+
+PHASE 5 — INCLUSIVE DIGITAL ACCESS
+
+- SMS notification
+- Voice / IVR
+- USSD service
+- Basic mobile phone access
+- Low-bandwidth offline support
+
+Never present a future feature as an active service.
+
+---
+
+PART 25 — FUNCTIONALITY AND BUILD REQUIREMENTS
+
+Build an actual interactive application.
+
+Do not generate a static website with buttons that do nothing.
+
+Required working flows:
+
+Flow A — Account and farm
+
+Demo login → create farm → generate Farm ID → dashboard.
+
+Flow B — Animal registration
+
+Select species → enter details → generate Animal ID → animal profile.
+
+Flow C — Poultry registration
+
+Select poultry type → enter flock size and placement date → generate Flock ID → flock profile.
+
+Flow D — Preventive care
+
+Open animal profile → view eligible approved care plan → create or view scheduled task → record completion → update timeline.
+
+Flow E — Reminder system
+
+Open calendar → view upcoming and overdue tasks → open task → complete or reschedule where allowed.
+
+Flow F — AI guidance
+
+Open AI assistant → choose question → receive safe demo response or configured Gemini response → show veterinary escalation when appropriate.
+
+Flow G — Veterinary consultation
+
+Select animal → submit consultation request → see request status.
+
+Flow H — Regional alert
+
+Open local updates → filter by region/species → view source and verification status.
+
+Flow I — Biosecurity
+
+Open audit → answer questions → view identified weaknesses → receive action recommendations → update action status.
+
+Flow J — USSD simulation
+
+Open USSD simulator → navigate menu → view task/reminder → submit simulated request.
+
+Flow K — Expert administration
+
+Open admin demo → review protocol → change approval status → inspect alert records.
+
+Every primary button must work.
+
+Every navigation item must open the appropriate section.
+
+All data changes must update the UI.
+
+Use persistent local demo data or Firebase when configured.
+
+---
+
+PART 26 — PERFORMANCE AND ACCESSIBILITY
+
+The application should:
+
+- Load quickly.
+- Avoid oversized images.
+- Use optimized assets.
+- Work on low- to mid-range Android smartphones.
+- Have readable typography.
+- Use large touch targets.
+- Support simple form interactions.
+- Gracefully handle slow connections.
+- Show appropriate loading and error states.
+- Provide useful empty states.
+- Avoid unnecessary visual animation.
+
+Design for an installable PWA where supported.
+
+Prepare an offline-friendly architecture:
+
+- Cache essential static assets.
+- Allow selected records to be drafted offline.
+- Show pending synchronization state.
+- Avoid claiming that a record has synced until synchronization succeeds.
+
+Do not build complex background sync that cannot be verified in this prototype.
+
+---
+
+PART 27 — FINAL QUALITY CONTROL
+
+Before declaring the rebuild complete, perform a complete functional and visual review.
+
+Product architecture
+
+- Is the brand displayed as খামার সুরক্ষা by default?
+- Does the application support cattle, buffalo, goat, sheep, chicken, and duck?
+- Are Animal IDs and Flock IDs correctly separated?
+- Can one farmer manage multiple farms?
+- Are the major modules connected?
+
+Preventive care
+
+- Does the application avoid universal vaccination assumptions?
+- Are vaccination rules species- and protocol-specific?
+- Are deworming reminders configurable?
+- Are only approved protocols allowed to generate active recommendations?
+- Can care records be recorded and viewed?
+
+AI and professional care
+
+- Does the AI assistant follow its safety boundaries?
+- Does it avoid diagnosis and prescriptions?
+- Can users request human veterinary support?
+- Are service availability and integration status truthful?
+
+Alerts and data
+
+- Are reported and verified health events distinguished?
+- Are sources and update dates visible?
+- Is simulated data clearly labelled?
+- Are weather and government integrations honest?
+
+Accessibility
+
+- Is Bangla the default language?
+- Is English available?
+- Is the mobile layout easy to use?
+- Are visual icons and labels easy to understand?
+- Is the system suitable for users with limited digital literacy?
+
+Technical quality
+
+- Do all navigation items work?
+- Do all forms save data?
+- Are IDs unique?
+- Do dashboard values update?
+- Do reminders reflect actual records?
+- Is data access controlled?
+- Are API secrets kept out of the frontend?
+- Does the application work in demo mode without external services?
+
+---
+
+FINAL INSTRUCTION
+
+Do not build a generic farm website.
+
+Build খামার সুরক্ষা as a coherent, multi-species digital farm and animal-health ecosystem.
+
+The most important product experience should be:
+
+FARM ID
+→ ANIMAL / FLOCK IDENTITY
+→ PREVENTIVE HEALTH RECORD
+→ VACCINATION / DEWORMING CALENDAR
+→ REMINDERS
+→ AI GUIDANCE
+→ VETERINARY SUPPORT
+→ BIOSECURITY
+→ REGIONAL INFORMATION
+
+The entire product must feel like one connected system.
+
+The design must be:
+
+- Professional enough for university advisors.
+- Compelling enough for innovation competition judges.
+- Simple enough for ordinary rural farmers.
+- Technically structured enough for future development.
+- Scientifically responsible enough for veterinary review.
+
+Prioritize the real farmer's experience over decorative dashboards.
+
+Inspect, restructure, implement, test, and refine the existing application.
+
+Do not stop at a visual mockup.
+
+Deliver the most complete, functional, mobile-first advisor demonstration prototype possible within the available Google AI Studio environment.
