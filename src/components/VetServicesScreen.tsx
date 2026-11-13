@@ -10,6 +10,7 @@ import {
 import { toBanglaNum } from '../translations';
 import { StatusBadge } from './ui/StatusBadge';
 import { ResilientImage } from './ui/ResilientImage';
+import { PrivatePhotoField } from './ui/PrivatePhotoField';
 import { FARM_VISUAL_ASSETS } from '../lib/visualAssets';
 import {
   KHAMAR_CONTACT_CONFIG,
@@ -38,6 +39,7 @@ interface VetServicesScreenProps {
   flocks: FlockProfile[];
   requests: VetConsultationRequest[];
   lang: Language;
+  isDemoActive: boolean;
   onSubmitRequest: (newReq: VetConsultationRequest) => void;
   presetAnimal?: AnimalProfile | null;
 }
@@ -66,6 +68,7 @@ export const VetServicesScreen: React.FC<VetServicesScreenProps> = ({
   flocks,
   requests,
   lang,
+  isDemoActive,
   onSubmitRequest,
   presetAnimal,
 }) => {
@@ -81,6 +84,7 @@ export const VetServicesScreen: React.FC<VetServicesScreenProps> = ({
   const [selectedHospital, setSelectedHospital] = useState('vet_demo_01');
   const [preferredTimeWindow, setPreferredTimeWindow] = useState('সকাল ৯টা – দুপুর ১টা');
   const [consultDesc, setConsultDesc] = useState('');
+  const [consultPhotoUrl, setConsultPhotoUrl] = useState<string | undefined>();
   const [submittedNotice, setSubmittedNotice] = useState<string | null>(null);
 
   // Explicitly labeled Demo Veterinary Directory for Khamar Shurokkha support (no fake verified claims)
@@ -196,6 +200,7 @@ export const VetServicesScreen: React.FC<VetServicesScreenProps> = ({
       description:
         consultDesc.trim() ||
         (isBn ? 'খামারি কর্তৃক প্রাথমিক তথ্য ও লক্ষণ জমা দেওয়া হয়েছে।' : 'Submitted by farmer with symptoms.'),
+      photoUrl: consultPhotoUrl,
       status: 'submitted',
       assignedVet: matchedCenter
         ? {
@@ -214,6 +219,7 @@ export const VetServicesScreen: React.FC<VetServicesScreenProps> = ({
     onSubmitRequest(newReq);
     setIsRequestModalOpen(false);
     setConsultDesc('');
+    setConsultPhotoUrl(undefined);
     setSelectedSymptoms([]);
     setSubmittedNotice(
       isBn
@@ -346,6 +352,15 @@ export const VetServicesScreen: React.FC<VetServicesScreenProps> = ({
                         <strong className="text-slate-900">{isBn ? 'বিবরণ: ' : 'Details: '}</strong>
                         {req.description}
                       </p>
+                      {req.photoUrl && (
+                        <div className="mt-2 h-32 w-full max-w-sm overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+                          <ResilientImage
+                            alt={isBn ? `${req.targetName} পশুচিকিৎসা অনুরোধের ছবি` : `Photo for ${req.targetName} vet request`}
+                            className="h-full w-full object-cover"
+                            src={req.photoUrl}
+                          />
+                        </div>
+                      )}
                       <p>
                         <strong className="text-slate-900">{isBn ? 'মাধ্যম ও সময়: ' : 'Mode & Time: '}</strong>
                         {req.consultationType === 'phone_call'
@@ -618,16 +633,26 @@ export const VetServicesScreen: React.FC<VetServicesScreenProps> = ({
               </div>
 
               {/* Step 7: Short Description */}
-              <div>
-                <label className="text-xs font-extrabold text-slate-800 block mb-1">
-                  {isBn ? '৭. সংক্ষিপ্ত বিবরণ লিখুন (কত দিন ধরে সমস্যা?)' : '7. Short Description'}
-                </label>
-                <textarea
-                  rows={2}
-                  value={consultDesc}
-                  onChange={(e) => setConsultDesc(e.target.value)}
-                  placeholder={isBn ? 'যেমন: ২ দিন ধরে খাবার কম খাচ্ছে এবং হালকা জ্বর...' : 'e.g. Less appetite for 2 days...'}
-                  className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-emerald-600 outline-none"
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-extrabold text-slate-800 block mb-1" htmlFor="vet-request-description">
+                    {isBn ? '৭. সংক্ষিপ্ত বিবরণ লিখুন (কত দিন ধরে সমস্যা?)' : '7. Short Description'}
+                  </label>
+                  <textarea
+                    id="vet-request-description"
+                    rows={2}
+                    value={consultDesc}
+                    onChange={(e) => setConsultDesc(e.target.value)}
+                    placeholder={isBn ? 'যেমন: ২ দিন ধরে খাবার কম খাচ্ছে এবং হালকা জ্বর...' : 'e.g. Less appetite for 2 days...'}
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-emerald-600 outline-none"
+                  />
+                </div>
+                <PrivatePhotoField
+                  alt={isBn ? 'পশুচিকিৎসা অনুরোধের সংযুক্ত ছবি' : 'Photo attached to vet request'}
+                  disabled={isDemoActive}
+                  lang={lang}
+                  onChange={setConsultPhotoUrl}
+                  value={consultPhotoUrl}
                 />
               </div>
 

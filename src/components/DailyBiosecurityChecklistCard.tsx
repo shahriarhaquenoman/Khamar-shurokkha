@@ -3,7 +3,6 @@ import { Language } from '../types';
 import { toBanglaNum } from '../translations';
 import {
   STANDARD_BIOSECURITY_TASKS,
-  biosecurityService,
   BiosecurityChecklistRecord,
 } from '../services/biosecurityService';
 import {
@@ -29,6 +28,8 @@ interface DailyBiosecurityChecklistCardProps {
   ownerUid: string;
   ownerName: string;
   lang: Language;
+  records: Record<string, BiosecurityChecklistRecord>;
+  onSaveRecord: (record: BiosecurityChecklistRecord) => void;
   onBiosecurityComplete?: (score: number) => void;
 }
 
@@ -38,44 +39,40 @@ export const DailyBiosecurityChecklistCard: React.FC<DailyBiosecurityChecklistCa
   ownerUid,
   ownerName,
   lang,
+  records,
+  onSaveRecord,
   onBiosecurityComplete,
 }) => {
   const isBn = lang === 'bn';
   const todayStr = new Date().toISOString().split('T')[0];
 
   const [selectedDate, setSelectedDate] = useState<string>(todayStr);
-  const [completedItems, setCompletedItems] = useState<string[]>([
-    'footbath_maintenance',
-    'visitor_logging',
-    'dedicated_footwear',
-  ]);
+  const [completedItems, setCompletedItems] = useState<string[]>([]);
   const [inspectorName, setInspectorName] = useState<string>(ownerName || 'খামারি নিজে');
   const [notes, setNotes] = useState<string>('');
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [showGuide, setShowGuide] = useState<boolean>(false);
 
-  // Load existing checklist record for this farm and date if available
-  useEffect(() => {
-    let isMounted = true;
-    biosecurityService
-      .getDailyChecklist(farmId, ownerUid, selectedDate)
-      .then((record) => {
-        if (isMounted && record) {
-          setCompletedItems(record.itemsCompleted);
-          if (record.inspectorName) setInspectorName(record.inspectorName);
-          if (record.notes) setNotes(record.notes);
-          setIsSaved(true);
-        } else if (isMounted) {
-          setIsSaved(false);
-        }
-      })
-      .catch(() => {});
+  const checklistKey = `${farmId}_${selectedDate}`;
+  const existingRecord = records[checklistKey];
 
-    return () => {
-      isMounted = false;
-    };
-  }, [farmId, ownerUid, selectedDate]);
+  useEffect(() => {
+    if (existingRecord) {
+      setCompletedItems(existingRecord.itemsCompleted);
+      setInspectorName(existingRecord.inspectorName || ownerName || 'খামারি নিজে');
+      setNotes(existingRecord.notes || '');
+      setIsSaved(true);
+      return;
+    }
+
+    setCompletedItems(ownerUid.startsWith('demo_user_')
+      ? ['footbath_maintenance', 'visitor_logging', 'dedicated_footwear']
+      : []);
+    setInspectorName(ownerName || 'খামারি নিজে');
+    setNotes('');
+    setIsSaved(false);
+  }, [existingRecord, ownerName, ownerUid]);
 
   const toggleTask = (taskId: string) => {
     setIsSaved(false);
@@ -87,26 +84,23 @@ export const DailyBiosecurityChecklistCard: React.FC<DailyBiosecurityChecklistCa
   const totalTasks = STANDARD_BIOSECURITY_TASKS.length;
   const scorePercent = Math.round((completedItems.length / totalTasks) * 100);
 
-  const handleSave = async () => {
+  const handleSave = () => {
     setIsSaving(true);
-    try {
-      await biosecurityService.saveDailyChecklist(
-        farmId,
-        ownerUid,
-        selectedDate,
-        completedItems,
-        inspectorName,
-        notes
-      );
-      setIsSaved(true);
-      if (onBiosecurityComplete) {
-        onBiosecurityComplete(scorePercent);
-      }
-    } catch (e) {
-      console.error('Error saving checklist:', e);
-    } finally {
-      setIsSaving(false);
-    }
+    onSaveRecord({
+      checklistId: `bio_${farmId}_${selectedDate}`,
+      farmId,
+      ownerUid,
+      date: selectedDate,
+      itemsCompleted: completedItems,
+      totalItems: totalTasks,
+      scorePercent,
+      inspectorName,
+      notes,
+      createdAt: existingRecord?.createdAt || new Date().toISOString(),
+    });
+    setIsSaved(true);
+    onBiosecurityComplete?.(scorePercent);
+    setIsSaving(false);
   };
 
   const getTaskIcon = (taskId: string) => {
@@ -296,7 +290,7 @@ export const DailyBiosecurityChecklistCard: React.FC<DailyBiosecurityChecklistCa
         )}
       </div>
 
-      {/* Action Bar (Touch-friendly 48px button, Persistent Save to Firestore) */}
+      {/* Action Bar */}
       <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-xs text-slate-600">
           <Clock className="w-4 h-4 text-slate-400 shrink-0" />
@@ -320,11 +314,11 @@ export const DailyBiosecurityChecklistCard: React.FC<DailyBiosecurityChecklistCa
             }`}
           >
             {isSaving ? (
-              <span>{isBn ? 'সংরক্ষণ হচ্ছে...' : 'Saving to Database...'}</span>
+              <span>{isBn ? 'সংরক্ষণ হচ্ছে...' : 'Saving...'}</span>
             ) : isSaved ? (
               <>
                 <Check className="w-4 h-4" />
-                <span>{isBn ? '✓ ডাটাবেজে সংরক্ষিত' : 'Saved in Firestore'}</span>
+                <span>{isBn ? '✓ অ্যাকাউন্টে সংরক্ষিত' : 'Saved to account'}</span>
               </>
             ) : (
               <>

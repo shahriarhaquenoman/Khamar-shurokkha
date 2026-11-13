@@ -1,19 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { ArrowRight, CheckCircle2, Info, Lock, LogOut, Phone, Shield, User, X } from 'lucide-react';
 import { Language } from '../types';
 import { FarmerAccount, authService, DEMO_FARMER_ACCOUNTS } from '../services/authService';
-import {
-  X,
-  User,
-  Phone,
-  Mail,
-  Shield,
-  CheckCircle2,
-  Lock,
-  Sparkles,
-  ArrowRight,
-  LogOut,
-  Info,
-} from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -23,6 +11,15 @@ interface AuthModalProps {
   onUserChanged: (user: FarmerAccount) => void;
 }
 
+function keepImeComposition(event: React.KeyboardEvent<HTMLInputElement>) {
+  if (
+    event.key === 'Enter' &&
+    (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229)
+  ) {
+    event.preventDefault();
+  }
+}
+
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
@@ -30,286 +27,327 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   lang,
   onUserChanged,
 }) => {
-  if (!isOpen) return null;
   const isBn = lang === 'bn';
-
   const [mode, setMode] = useState<'demo' | 'real'>(currentUser?.isDemo ? 'demo' : 'real');
-  const [name, setName] = useState(currentUser?.isDemo ? '' : currentUser?.displayName || '');
-  const [phone, setPhone] = useState(currentUser?.isDemo ? '' : currentUser?.phoneNumber || '');
-  const [email, setEmail] = useState(currentUser?.isDemo ? '' : currentUser?.email || '');
-  const [prefLang, setPrefLang] = useState<Language>(currentUser?.preferredLanguage || 'bn');
+  const [authMode, setAuthMode] = useState<'sign-in' | 'sign-up'>('sign-in');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [preferredLanguage, setPreferredLanguage] = useState<Language>(lang);
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setMode(currentUser?.isDemo ? 'demo' : 'real');
+    setAuthMode('sign-in');
+    setName('');
+    setPhone(currentUser?.isDemo ? '' : currentUser?.phoneNumber || '');
+    setPassword('');
+    setPreferredLanguage(currentUser?.preferredLanguage || lang);
+    setErrorMessage('');
+  }, [isOpen, currentUser?.uid, currentUser?.isDemo, currentUser?.phoneNumber, currentUser?.preferredLanguage, lang]);
 
   const handleSelectDemo = async (demoKey: 'demo-rafiq' | 'demo-fatema') => {
     setLoading(true);
+    setErrorMessage('');
     try {
       const account = await authService.selectDemoFarmer(demoKey);
       onUserChanged(account);
       onClose();
-    } catch (e: any) {
-      setErrorMsg(e.message || 'Error activating demo account');
+    } catch {
+      setErrorMessage(isBn ? 'ডেমো অ্যাকাউন্ট চালু করা যায়নি।' : 'The demo account could not be opened.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRealRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) {
-      setErrorMsg(isBn ? 'অনুগ্রহ করে আপনার নাম লিখুন' : 'Please enter your name');
-      return;
-    }
-    if (!phone.trim()) {
-      setErrorMsg(isBn ? 'অনুগ্রহ করে আপনার মোবাইল নম্বর লিখুন' : 'Please enter your phone number');
-      return;
-    }
-
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setLoading(true);
-    setErrorMsg('');
+    setErrorMessage('');
     try {
-      const account = await authService.signInFarmerWithProfile(
-        name.trim(),
-        phone.trim(),
-        prefLang,
-        email.trim() || undefined
-      );
+      const account =
+        authMode === 'sign-up'
+          ? await authService.registerFarmerWithPassword(name, phone, password, preferredLanguage)
+          : await authService.signInFarmerWithPassword(phone, password);
       onUserChanged(account);
       onClose();
-    } catch (e: any) {
-      setErrorMsg(e.message || 'Registration error');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '';
+      if (message === 'invalid_phone') {
+        setErrorMessage(isBn ? 'সঠিক বাংলাদেশি মোবাইল নম্বর লিখুন।' : 'Enter a valid Bangladesh mobile number.');
+      } else {
+        setErrorMessage(message || (isBn ? 'লগইন করা যায়নি। আবার চেষ্টা করুন।' : 'Could not sign in. Please try again.'));
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const handleSignOut = async () => {
-    await authService.signOut();
-    const fallback = await authService.selectDemoFarmer('demo-rafiq');
-    onUserChanged(fallback);
-    onClose();
+    setLoading(true);
+    setErrorMessage('');
+    try {
+      await authService.signOut();
+      onUserChanged(DEMO_FARMER_ACCOUNTS['demo-rafiq']);
+      onClose();
+    } catch {
+      setErrorMessage(isBn ? 'লগআউট করা যায়নি। আবার চেষ্টা করুন।' : 'Sign out could not be completed.');
+    } finally {
+      setLoading(false);
+    }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-900 text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-3 backdrop-blur-xs animate-in fade-in duration-150">
+      <section
+        aria-labelledby="farmer-account-title"
+        aria-modal="true"
+        className="flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl"
+        role="dialog"
+      >
+        <header className="flex items-center justify-between border-b border-slate-100 bg-slate-900 p-4 text-white sm:p-5">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/30">
-              <User className="w-5 h-5" />
+            <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/20 p-2 text-emerald-300">
+              <User aria-hidden="true" className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="font-black text-base sm:text-lg">
-                {isBn ? 'খামারি অ্যাকাউন্ট ও পরিচিতি' : 'Farmer Account Profile'}
-              </h3>
+              <h2 className="text-base font-black sm:text-lg" id="farmer-account-title">
+                {isBn ? 'খামারি অ্যাকাউন্ট' : 'Farmer account'}
+              </h2>
               <p className="text-xs text-slate-300">
                 {currentUser?.isDemo
-                  ? isBn
-                    ? 'বর্তমানে প্রদর্শনী (ডেমো) মোডে আছেন'
-                    : 'Currently in Demo Mode'
-                  : isBn
-                  ? 'প্রকৃত ফায়ারবেস ক্লাউড অ্যাকাউন্ট'
-                  : 'Authenticated Firebase Account'}
+                  ? isBn ? 'বর্তমানে ডেমো মোডে আছেন' : 'Currently using demo mode'
+                  : isBn ? 'আপনার ব্যক্তিগত খামার তথ্য' : 'Your private farm data'}
               </p>
             </div>
           </div>
-
           <button
+            aria-label={isBn ? 'বন্ধ করুন' : 'Close'}
+            className="rounded-full p-1.5 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
             onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            type="button"
           >
-            <X className="w-5 h-5" />
+            <X aria-hidden="true" className="h-5 w-5" />
+          </button>
+        </header>
+
+        <div className="flex gap-2 border-b border-slate-200 bg-slate-100 p-3">
+          <button
+            aria-pressed={mode === 'demo'}
+            className={`min-h-10 flex-1 rounded-xl px-2 py-2 text-xs font-bold transition-all ${mode === 'demo' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+            onClick={() => { setMode('demo'); setErrorMessage(''); }}
+            type="button"
+          >
+            {isBn ? 'ডেমো খামারি' : 'Demo profiles'}
+          </button>
+          <button
+            aria-pressed={mode === 'real'}
+            className={`min-h-10 flex-1 rounded-xl px-2 py-2 text-xs font-bold transition-all ${mode === 'real' ? 'bg-emerald-800 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+            onClick={() => { setMode('real'); setErrorMessage(''); }}
+            type="button"
+          >
+            {isBn ? 'মোবাইল অ্যাকাউন্ট' : 'Mobile account'}
           </button>
         </div>
 
-        {/* Tab switch between Demo & Real */}
-        <div className="p-3 bg-slate-100 flex gap-2 border-b border-slate-200">
-          <button
-            type="button"
-            onClick={() => setMode('demo')}
-            className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
-              mode === 'demo'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            {isBn ? 'প্রদর্শনী / ডেমো খামারি' : 'Demonstration Logins'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode('real')}
-            className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
-              mode === 'real'
-                ? 'bg-emerald-800 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            {isBn ? 'নতুন খামারি নিবন্ধন (ফায়ারবেস)' : 'Real Farmer Registration'}
-          </button>
-        </div>
-
-        <div className="p-5 overflow-y-auto space-y-4 flex-1">
-          {errorMsg && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 font-semibold">
-              {errorMsg}
+        <div className="flex-1 space-y-4 overflow-y-auto p-5">
+          {errorMessage && (
+            <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-800" role="alert">
+              {errorMessage}
             </div>
           )}
 
           {mode === 'demo' ? (
             <div className="space-y-3">
-              <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-amber-950 flex items-start gap-2">
-                <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-950">
+                <Info aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
                 <span>
                   {isBn
-                    ? 'পরীক্ষা ও পর্যালোচনার জন্য প্রস্তুতকৃত ডেমো অ্যাকাউন্ট। কোনো ওটিপি বা অতিরিক্ত পিন ছাড়াই দ্রুত সকল খামার ও প্রাণীর ডাটা পর্যবেক্ষণ করুন।'
-                    : 'Advisory demonstration profiles. Switch instantly without OTP to test multi-farm features.'}
+                    ? 'পর্যালোচনার জন্য প্রস্তুত নমুনা তথ্য। ডেমো পরিবর্তন আপনার ব্যক্তিগত অ্যাকাউন্টে সংরক্ষিত হয় না।'
+                    : 'Sample profiles for review. Changes made in demo mode are not saved to a personal account.'}
                 </span>
               </div>
 
-              {/* Demo Profiles */}
-              <div
-                onClick={() => handleSelectDemo('demo-rafiq')}
-                className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${
-                  currentUser?.uid === 'demo_user_rafiq_001'
-                    ? 'border-emerald-600 bg-emerald-50/70'
-                    : 'border-slate-200 hover:border-slate-300'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-slate-900">মোঃ রফিকুল ইসলাম</span>
-                    <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full border border-amber-300">
-                      DEMO
+              {([
+                ['demo-rafiq', 'মোঃ রফিকুল ইসলাম', 'গ্রিন ভ্যালি ইন্টিগ্রেটেড ফার্ম · হবিগঞ্জ'],
+                ['demo-fatema', 'মোছাঃ ফাতেমা বেগম', 'সোনার বাংলা খামার · শেরপুর'],
+              ] as const).map(([demoKey, displayName, description]) => {
+                const account = DEMO_FARMER_ACCOUNTS[demoKey];
+                const selected = currentUser?.uid === account.uid;
+                return (
+                  <button
+                    aria-pressed={selected}
+                    className={`flex min-h-20 w-full items-center justify-between rounded-2xl border-2 p-4 text-left transition-all ${selected ? 'border-emerald-600 bg-emerald-50/70' : 'border-slate-200 hover:border-slate-300'}`}
+                    disabled={loading}
+                    key={demoKey}
+                    onClick={() => void handleSelectDemo(demoKey)}
+                    type="button"
+                  >
+                    <span>
+                      <span className="flex items-center gap-2 font-bold text-sm text-slate-900">
+                        {displayName}
+                        <span className="rounded-full border border-amber-300 bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-900">DEMO</span>
+                      </span>
+                      <span className="mt-1 block text-xs text-slate-500">{description}</span>
                     </span>
-                  </div>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    গ্রিন ভ্যালি ইন্টিগ্রেটেড ফার্ম (মাধবপুর, হবিগঞ্জ) · গরু, ব্রয়লার, ছাগল ও ভেড়া
-                  </p>
-                </div>
-                {currentUser?.uid === 'demo_user_rafiq_001' && (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                )}
-              </div>
-
-              <div
-                onClick={() => handleSelectDemo('demo-fatema')}
-                className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${
-                  currentUser?.uid === 'demo_user_fatema_002'
-                    ? 'border-emerald-600 bg-emerald-50/70'
-                    : 'border-slate-200 hover:border-slate-300'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-slate-900">মোছাঃ ফাতেমা বেগম</span>
-                    <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full border border-amber-300">
-                      DEMO
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    সোনার বাংলা খামার (শেরপুর) · দুগ্ধ খামার ও ছাগল পালন
-                  </p>
-                </div>
-                {currentUser?.uid === 'demo_user_fatema_002' && (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                )}
-              </div>
+                    {selected && <CheckCircle2 aria-hidden="true" className="h-5 w-5 shrink-0 text-emerald-600" />}
+                  </button>
+                );
+              })}
             </div>
           ) : (
-            <form onSubmit={handleRealRegister} className="space-y-3.5">
-              <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200 text-xs text-emerald-950 flex items-start gap-2">
-                <Shield className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+            <>
+              <div className="flex items-start gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-950">
+                <Shield aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />
                 <span>
                   {isBn
-                    ? 'আপনার নিজস্ব ক্লাউড অ্যাকাউন্ট। এতে যোগ করা খামার ও পশুপাখির সকল তথ্য ফায়ারবেস ফায়ারস্টোরে স্থায়ীভাবে সংরক্ষিত থাকবে।'
-                    : 'Persistent personal account stored directly in Firebase Cloud Firestore.'}
+                    ? 'মোবাইল নম্বর ও পাসওয়ার্ড দিয়ে লগইন করুন। OTP নেই; তাই ফোন নম্বরের মালিকানা যাচাই হয় না এবং পাসওয়ার্ড ভুলে গেলে অ্যাকাউন্ট ফেরত পাওয়ার ব্যবস্থা নেই।'
+                    : 'Use a mobile number and password. There is no OTP, so phone ownership is not verified and password recovery is unavailable.'}
                 </span>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  {isBn ? 'খামারির পূর্ণ নাম *' : 'Farmer Full Name *'}
-                </label>
-                <div className="relative">
-                  <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder={isBn ? 'যেমন: মোঃ আলমগীর হোসেন' : 'e.g. Md. Alamgir Hossain'}
-                    className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                  />
-                </div>
+              <div className="flex gap-2 rounded-xl bg-slate-100 p-1">
+                <button
+                  aria-pressed={authMode === 'sign-in'}
+                  className={`min-h-9 flex-1 rounded-lg text-xs font-bold ${authMode === 'sign-in' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}
+                  onClick={() => { setAuthMode('sign-in'); setErrorMessage(''); }}
+                  type="button"
+                >
+                  {isBn ? 'লগইন' : 'Sign in'}
+                </button>
+                <button
+                  aria-pressed={authMode === 'sign-up'}
+                  className={`min-h-9 flex-1 rounded-lg text-xs font-bold ${authMode === 'sign-up' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}
+                  onClick={() => { setAuthMode('sign-up'); setErrorMessage(''); }}
+                  type="button"
+                >
+                  {isBn ? 'নতুন অ্যাকাউন্ট' : 'Create account'}
+                </button>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  {isBn ? 'মোবাইল নম্বর *' : 'Mobile Number *'}
-                </label>
-                <div className="relative">
-                  <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="tel"
-                    required
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="017XXXXXXXX"
-                    className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                  />
-                </div>
-              </div>
+              <form className="space-y-3.5" onSubmit={(event) => void handleSubmit(event)}>
+                {authMode === 'sign-up' && (
+                  <div>
+                    <label className="mb-1 block text-xs font-bold text-slate-700" htmlFor="farmer-name">
+                      {isBn ? 'খামারির নাম *' : 'Farmer name *'}
+                    </label>
+                    <div className="relative">
+                      <User aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                      <input
+                        autoComplete="name"
+                        className="w-full rounded-xl border border-slate-300 py-2.5 pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        id="farmer-name"
+                        maxLength={80}
+                        onChange={(event) => setName(event.target.value)}
+                        onKeyDown={keepImeComposition}
+                        placeholder={isBn ? 'যেমন: মোঃ আলমগীর হোসেন' : 'e.g. Md. Alamgir Hossain'}
+                        required
+                        value={name}
+                      />
+                    </div>
+                  </div>
+                )}
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  {isBn ? 'ইমেইল (ঐচ্ছিক)' : 'Email (Optional)'}
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="farmer@example.com"
-                    className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                  />
+                <div>
+                  <label className="mb-1 block text-xs font-bold text-slate-700" htmlFor="farmer-phone">
+                    {isBn ? 'বাংলাদেশি মোবাইল নম্বর *' : 'Bangladesh mobile number *'}
+                  </label>
+                  <div className="relative">
+                    <Phone aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <input
+                      autoComplete="tel"
+                      className="w-full rounded-xl border border-slate-300 py-2.5 pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      id="farmer-phone"
+                      inputMode="tel"
+                      onChange={(event) => setPhone(event.target.value)}
+                      onKeyDown={keepImeComposition}
+                      placeholder="017XXXXXXXX"
+                      required
+                      type="tel"
+                      value={phone}
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 min-h-[44px]"
-              >
-                <span>
-                  {loading
-                    ? isBn
-                      ? 'অ্যাকাউন্ট তৈরি হচ্ছে...'
-                      : 'Connecting...'
-                    : isBn
-                    ? 'নিবন্ধন সম্পন্ন ও ক্লাউড সংযোগ'
-                    : 'Register & Connect to Cloud'}
-                </span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </form>
+                <div>
+                  <label className="mb-1 block text-xs font-bold text-slate-700" htmlFor="farmer-password">
+                    {isBn ? 'পাসওয়ার্ড *' : 'Password *'}
+                  </label>
+                  <div className="relative">
+                    <Lock aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <input
+                      autoComplete={authMode === 'sign-up' ? 'new-password' : 'current-password'}
+                      className="w-full rounded-xl border border-slate-300 py-2.5 pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      id="farmer-password"
+                      minLength={authMode === 'sign-up' ? 10 : undefined}
+                      onChange={(event) => setPassword(event.target.value)}
+                      onKeyDown={keepImeComposition}
+                      required
+                      type="password"
+                      value={password}
+                    />
+                  </div>
+                  {authMode === 'sign-up' && (
+                    <p className="mt-1 text-[11px] text-slate-500">
+                      {isBn ? 'কমপক্ষে ১০টি অক্ষর ব্যবহার করুন।' : 'Use at least 10 characters.'}
+                    </p>
+                  )}
+                </div>
+
+                {authMode === 'sign-up' && (
+                  <div>
+                    <label className="mb-1 block text-xs font-bold text-slate-700" htmlFor="preferred-language">
+                      {isBn ? 'পছন্দের ভাষা' : 'Preferred language'}
+                    </label>
+                    <select
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      id="preferred-language"
+                      onChange={(event) => setPreferredLanguage(event.target.value as Language)}
+                      value={preferredLanguage}
+                    >
+                      <option value="bn">বাংলা</option>
+                      <option value="en">English</option>
+                    </select>
+                  </div>
+                )}
+
+                <button
+                  className="flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-700 py-3 text-xs font-bold text-white shadow-md transition-colors hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
+                  disabled={loading}
+                  type="submit"
+                >
+                  <span>
+                    {loading
+                      ? isBn ? 'অনুগ্রহ করে অপেক্ষা করুন…' : 'Please wait…'
+                      : authMode === 'sign-up'
+                        ? isBn ? 'অ্যাকাউন্ট তৈরি করুন' : 'Create account'
+                        : isBn ? 'লগইন করুন' : 'Sign in'}
+                  </span>
+                  <ArrowRight aria-hidden="true" className="h-4 w-4" />
+                </button>
+              </form>
+            </>
           )}
 
           {!currentUser?.isDemo && (
-            <div className="pt-3 border-t border-slate-100 flex justify-end">
+            <div className="flex justify-end border-t border-slate-100 pt-3">
               <button
+                className="flex items-center gap-1.5 text-xs font-bold text-rose-700 hover:text-rose-800 disabled:opacity-50"
+                disabled={loading}
+                onClick={() => void handleSignOut()}
                 type="button"
-                onClick={handleSignOut}
-                className="text-xs font-bold text-rose-700 hover:text-rose-800 flex items-center gap-1.5"
               >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>{isBn ? 'অ্যাকাউন্ট থেকে লগআউট' : 'Sign Out'}</span>
+                <LogOut aria-hidden="true" className="h-3.5 w-3.5" />
+                <span>{isBn ? 'লগআউট' : 'Sign out'}</span>
               </button>
             </div>
           )}
         </div>
-      </div>
+      </section>
     </div>
   );
 };

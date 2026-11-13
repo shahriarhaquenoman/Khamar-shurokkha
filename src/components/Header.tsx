@@ -93,12 +93,14 @@ export const Header: React.FC<HeaderProps> = ({
             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
-          <div
+          <button
+            type="button"
             onClick={() => onNavigate('dashboard')}
-            className="cursor-pointer select-none"
+            className="cursor-pointer select-none text-left"
+            aria-label={isBn ? 'খামার সুরক্ষা ড্যাশবোর্ডে ফিরুন' : 'Go to Khamar Shurokkha dashboard'}
           >
-            <Logo size="md" lang={lang} />
-          </div>
+            <Logo size="md" lang={lang} compactOnMobile />
+          </button>
         </div>
 
         {/* Center: Farm & Account Selector */}

@@ -5,12 +5,14 @@ interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
   lang?: Language;
   showTagline?: boolean;
+  compactOnMobile?: boolean;
 }
 
 export const Logo: React.FC<LogoProps> = ({
   size = 'md',
   lang = 'bn',
   showTagline = true,
+  compactOnMobile = false,
 }) => {
   const isBn = lang === 'bn';
 
@@ -75,7 +77,7 @@ export const Logo: React.FC<LogoProps> = ({
         </svg>
       </div>
 
-      <div className="flex flex-col leading-tight">
+      <div className={`flex flex-col leading-tight ${compactOnMobile ? 'hidden sm:flex' : ''}`}>
         <div className="flex items-center gap-1.5">
           <span className={`${textSizes[size]} text-slate-900 tracking-tight`}>
             {isBn ? 'খামার সুরক্ষা' : 'Khamar Shurokkha'}

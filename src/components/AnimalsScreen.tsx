@@ -16,6 +16,7 @@ import { FlockDetailModal } from './FlockDetailModal';
 import { IDCardModal } from './IDCardModal';
 import { generateAnimalId, generateFlockId } from '../utils/careEngine';
 import { ResilientImage } from './ui/ResilientImage';
+import { PrivatePhotoField } from './ui/PrivatePhotoField';
 import { getSpeciesFallbackImage, FARM_VISUAL_ASSETS } from '../lib/visualAssets';
 import {
   Layers,
@@ -43,6 +44,7 @@ interface AnimalsScreenProps {
   scheduledTasks: ScheduledCareTask[];
   healthEvents: HealthEventReport[];
   lang: Language;
+  isDemoActive: boolean;
   onAddAnimal: (newAnimal: AnimalProfile) => void;
   onAddFlock: (newFlock: FlockProfile) => void;
   onRecordMortality: (flockId: string, count: number) => void;
@@ -61,6 +63,7 @@ export const AnimalsScreen: React.FC<AnimalsScreenProps> = ({
   scheduledTasks,
   healthEvents,
   lang,
+  isDemoActive,
   onAddAnimal,
   onAddFlock,
   onRecordMortality,
@@ -95,6 +98,7 @@ export const AnimalsScreen: React.FC<AnimalsScreenProps> = ({
   const [newAnimalSex, setNewAnimalSex] = useState<'male' | 'female'>('female');
   const [newAnimalAgeMonths, setNewAnimalAgeMonths] = useState(12);
   const [newAnimalTag, setNewAnimalTag] = useState('');
+  const [newAnimalPhotoUrl, setNewAnimalPhotoUrl] = useState<string | undefined>();
 
   // New Flock Form State (Minimal Typing UI)
   const [newFlockType, setNewFlockType] = useState<PoultrySpecies>('chicken_broiler');
@@ -137,6 +141,7 @@ export const AnimalsScreen: React.FC<AnimalsScreenProps> = ({
       sex: newAnimalSex,
       estimatedAgeMonths: Number(newAnimalAgeMonths) || 12,
       healthStatus: 'healthy',
+      photoUrl: newAnimalPhotoUrl,
       createdAt: new Date().toISOString().split('T')[0],
     };
 
@@ -145,6 +150,7 @@ export const AnimalsScreen: React.FC<AnimalsScreenProps> = ({
     setNewAnimalName('');
     setNewAnimalBreed('');
     setNewAnimalTag('');
+    setNewAnimalPhotoUrl(undefined);
     setNewAnimalAgeMonths(12);
   };
 
@@ -722,6 +728,14 @@ export const AnimalsScreen: React.FC<AnimalsScreenProps> = ({
                   />
                 </div>
               </div>
+
+              <PrivatePhotoField
+                alt={newAnimalName || (isBn ? 'প্রাণীর ছবি' : 'Animal photo')}
+                disabled={isDemoActive}
+                lang={lang}
+                onChange={setNewAnimalPhotoUrl}
+                value={newAnimalPhotoUrl}
+              />
 
               {/* Action Buttons */}
               <div className="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">

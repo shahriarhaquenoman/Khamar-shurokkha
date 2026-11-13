@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Language, AppNotification, NavScreen } from '../types';
 import { toBanglaNum } from '../translations';
-import { notificationService } from '../services/notificationService';
 import {
   X,
   Bell,
@@ -20,9 +19,8 @@ interface NotificationCenterModalProps {
   isOpen: boolean;
   onClose: () => void;
   notifications: AppNotification[];
-  ownerUid: string;
   lang: Language;
-  onRefreshNotifications: () => void;
+  onMarkRead: (id: string) => void;
   onNavigate?: (screen: NavScreen) => void;
   completedTaskIds?: string[];
 }
@@ -31,9 +29,8 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
   isOpen,
   onClose,
   notifications,
-  ownerUid,
   lang,
-  onRefreshNotifications,
+  onMarkRead,
   onNavigate,
   completedTaskIds = [],
 }) => {
@@ -51,16 +48,12 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
   const filtered =
     filter === 'unread' ? activeNotifications.filter((n) => !n.isRead) : activeNotifications;
 
-  const handleMarkAllRead = async () => {
-    await notificationService.markAllAsRead(ownerUid, activeNotifications);
-    onRefreshNotifications();
+  const handleMarkAllRead = () => {
+    activeNotifications.filter((notification) => !notification.isRead).forEach((notification) => onMarkRead(notification.id));
   };
 
-  const handleItemClick = async (n: AppNotification) => {
-    if (!n.isRead) {
-      await notificationService.markAsRead(n.id);
-      onRefreshNotifications();
-    }
+  const handleItemClick = (n: AppNotification) => {
+    if (!n.isRead) onMarkRead(n.id);
     if (n.targetScreen && onNavigate) {
       onClose();
       onNavigate(n.targetScreen);

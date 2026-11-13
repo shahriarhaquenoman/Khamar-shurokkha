@@ -3,7 +3,7 @@
  * Integrated Multi-Species Farm Identity, Animal Health, Preventive Care & Early-Warning Platform
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import {
   Language,
   UserRole,
@@ -25,6 +25,7 @@ import {
   ActionStatus,
   CriticalAlert,
   KhamarBondhuMessage,
+  SmsNotificationPreferences,
 } from './types';
 import {
   INITIAL_DEMO_FARMS,
@@ -79,19 +80,17 @@ import {
 import { CriticalRiskModal } from './components/CriticalRiskModal';
 import { AuthModal } from './components/AuthModal';
 import { NotificationCenterModal } from './components/NotificationCenterModal';
-import { FarmerAccount, authService, DEMO_FARMER_ACCOUNTS } from './services/authService';
-import { farmService } from './services/farmService';
-import { animalService } from './services/animalService';
-import { flockService } from './services/flockService';
-import { careService } from './services/careService';
-import { notificationService } from './services/notificationService';
-
-const STORAGE_PREFIX = 'khamar_shurokkha_v2_';
-const JUDGE_SNAPSHOT_STORAGE_KEY = 'khamar_shurokkha_judge_snapshot_v1';
+import { type FarmerAccount, authService, DEMO_FARMER_ACCOUNTS } from './services/authService';
+import { createEmptyFarmerState, type FarmerAppState } from './services/farmerStateService';
+import { loadPrivateFarmerState, savePrivateFarmerState } from './lib/farmerApi';
+import { BiosecurityChecklistRecord } from './services/biosecurityService';
+import useSWR from 'swr';
 
 interface RealModeSnapshot {
   currentUser: FarmerAccount | null;
   isDemoActive: boolean;
+  lang: Language;
+  role: UserRole;
   allFarms: FarmProfile[];
   currentFarm: FarmProfile;
   animals: AnimalProfile[];
@@ -100,21 +99,21 @@ interface RealModeSnapshot {
   careRecords: CareRecord[];
   healthEvents: HealthEventReport[];
   vetRequests: VetConsultationRequest[];
+  regionalAlerts: RegionalAlert[];
+  weather: WeatherInfo;
   notifications: AppNotification[];
   auditAnswers: Record<string, AuditItemAnswer>;
   actions: ActionPlanItem[];
+  chatMessages: KhamarBondhuMessage[];
+  smsPrefs: SmsNotificationPreferences;
+  inAppNotifications: boolean;
+  biosecurityRecords: Record<string, BiosecurityChecklistRecord>;
   currentScreen: NavScreen;
 }
 
 export default function App() {
-  // 1. Core Language & Role State (Bangla by default)
-  const [lang, setLang] = useState<Language>(() => {
-    try {
-      return (localStorage.getItem(`${STORAGE_PREFIX}lang`) as Language) || 'bn';
-    } catch {
-      return 'bn';
-    }
-  });
+  // Demo data stays in memory; signed-in farmer data is loaded from private Supabase storage.
+  const [lang, setLang] = useState<Language>('bn');
 
   const [role, setRole] = useState<UserRole>('farmer');
   const [currentScreen, setCurrentScreen] = useState<NavScreen>('dashboard');
@@ -130,92 +129,38 @@ export default function App() {
   const [isNotifCenterOpen, setIsNotifCenterOpen] = useState(false);
 
   // 2. Farm Profiles State
-  const [allFarms, setAllFarms] = useState<FarmProfile[]>(() => {
-    try {
-      const saved = localStorage.getItem(`${STORAGE_PREFIX}all_farms`);
-      return saved ? JSON.parse(saved) : INITIAL_DEMO_FARMS;
-    } catch {
-      return INITIAL_DEMO_FARMS;
-    }
-  });
-
-  const [currentFarm, setCurrentFarm] = useState<FarmProfile>(() => {
-    try {
-      const saved = localStorage.getItem(`${STORAGE_PREFIX}current_farm`);
-      return saved ? JSON.parse(saved) : INITIAL_DEMO_FARMS[0];
-    } catch {
-      return INITIAL_DEMO_FARMS[0];
-    }
-  });
+  const [allFarms, setAllFarms] = useState<FarmProfile[]>(INITIAL_DEMO_FARMS);
+  const [currentFarm, setCurrentFarm] = useState<FarmProfile>(INITIAL_DEMO_FARMS[0]);
 
   // 3. Multi-Species Animals & Flocks
-  const [animals, setAnimals] = useState<AnimalProfile[]>(() => {
-    try {
-      const saved = localStorage.getItem(`${STORAGE_PREFIX}animals`);
-      return saved ? JSON.parse(saved) : INITIAL_ANIMALS;
-    } catch {
-      return INITIAL_ANIMALS;
-    }
-  });
-
-  const [flocks, setFlocks] = useState<FlockProfile[]>(() => {
-    try {
-      const saved = localStorage.getItem(`${STORAGE_PREFIX}flocks`);
-      return saved ? JSON.parse(saved) : INITIAL_FLOCKS;
-    } catch {
-      return INITIAL_FLOCKS;
-    }
-  });
+  const [animals, setAnimals] = useState<AnimalProfile[]>(INITIAL_ANIMALS);
+  const [flocks, setFlocks] = useState<FlockProfile[]>(INITIAL_FLOCKS);
 
   // 4. Preventive Health: Tasks & Records
-  const [tasks, setTasks] = useState<ScheduledCareTask[]>(() => {
-    try {
-      const saved = localStorage.getItem(`${STORAGE_PREFIX}tasks`);
-      return saved ? JSON.parse(saved) : INITIAL_SCHEDULED_TASKS;
-    } catch {
-      return INITIAL_SCHEDULED_TASKS;
-    }
-  });
-
-  const [careRecords, setCareRecords] = useState<CareRecord[]>(() => {
-    try {
-      const saved = localStorage.getItem(`${STORAGE_PREFIX}care_records`);
-      return saved ? JSON.parse(saved) : INITIAL_CARE_RECORDS;
-    } catch {
-      return INITIAL_CARE_RECORDS;
-    }
-  });
+  const [tasks, setTasks] = useState<ScheduledCareTask[]>(INITIAL_SCHEDULED_TASKS);
+  const [careRecords, setCareRecords] = useState<CareRecord[]>(INITIAL_CARE_RECORDS);
 
   // 5. Health Events & Vet Requests
-  const [healthEvents, setHealthEvents] = useState<HealthEventReport[]>(() => {
-    try {
-      const saved = localStorage.getItem(`${STORAGE_PREFIX}health_events`);
-      return saved ? JSON.parse(saved) : INITIAL_HEALTH_EVENTS;
-    } catch {
-      return INITIAL_HEALTH_EVENTS;
-    }
-  });
-
-  const [vetRequests, setVetRequests] = useState<VetConsultationRequest[]>(() => {
-    try {
-      const saved = localStorage.getItem(`${STORAGE_PREFIX}vet_requests`);
-      return saved ? JSON.parse(saved) : INITIAL_VET_REQUESTS;
-    } catch {
-      return INITIAL_VET_REQUESTS;
-    }
-  });
+  const [healthEvents, setHealthEvents] = useState<HealthEventReport[]>(INITIAL_HEALTH_EVENTS);
+  const [vetRequests, setVetRequests] = useState<VetConsultationRequest[]>(INITIAL_VET_REQUESTS);
 
   // 6. Regional Alerts, Weather & Notifications
   const [regionalAlerts, setRegionalAlerts] = useState<RegionalAlert[]>(INITIAL_REGIONAL_ALERTS);
-  const [weather] = useState<WeatherInfo>(INITIAL_WEATHER_INFO);
-  const [notifications, setNotifications] = useState<AppNotification[]>(() => {
-    try {
-      const saved = localStorage.getItem(`${STORAGE_PREFIX}notifications`);
-      return saved ? JSON.parse(saved) : INITIAL_NOTIFICATIONS;
-    } catch {
-      return INITIAL_NOTIFICATIONS;
-    }
+  const [weather, setWeather] = useState<WeatherInfo>(INITIAL_WEATHER_INFO);
+  const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
+  const [smsPrefs, setSmsPrefs] = useState<SmsNotificationPreferences>({
+    phoneNumber: INITIAL_DEMO_FARMS[0].ownerPhone,
+    isPhoneVerified: false,
+    smsOptInConsent: false,
+    categories: { vaccinations: true, deworming: true, biosecurity: true, regionalAlerts: true, vetAppointments: true },
+    quietHoursEnabled: true,
+    quietHoursStart: '21:00',
+    quietHoursEnd: '06:00',
+    ivrVoiceInterest: false,
+    gatewayStatus: 'planned_demo',
   });
+  const [inAppNotifications, setInAppNotifications] = useState(true);
+  const [biosecurityRecords, setBiosecurityRecords] = useState<Record<string, BiosecurityChecklistRecord>>({});
 
   // 7. Biosecurity Assessment State
   const [auditAnswers, setAuditAnswers] = useState<Record<string, AuditItemAnswer>>(DEMO_CURRENT_AUDIT.answers);
@@ -229,122 +174,195 @@ export default function App() {
   const [presetContextForAI, setPresetContextForAI] = useState<{ id: string; name: string; species: string } | null>(null);
   const [presetCareTarget, setPresetCareTarget] = useState<{ targetId?: string; type?: 'vaccination' | 'deworming' } | null>(null);
 
-  // Health Support active sub-tab + Persistent Khamar Bondhu Chat History
+  // Health Support active sub-tab + account-scoped Khamar Bondhu history
   const [healthSubTab, setHealthSubTab] = useState<'vet' | 'bondhu'>('vet');
-  const [chatMessages, setChatMessages] = useState<KhamarBondhuMessage[]>(() => {
-    try {
-      const saved = localStorage.getItem(`${STORAGE_PREFIX}chat_${currentFarm.id}`);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch {}
-    return [DEFAULT_KHAMAR_BONDHU_WELCOME(lang)];
-  });
+  const [chatMessages, setChatMessages] = useState<KhamarBondhuMessage[]>([
+    DEFAULT_KHAMAR_BONDHU_WELCOME('bn'),
+  ]);
 
   // Competition Judge Demo Mode + Guided Walkthrough (Isolated Snapshot-Restore)
   const [isJudgeDemoActive, setIsJudgeDemoActive] = useState<boolean>(false);
   const [isWalkthroughOpen, setIsWalkthroughOpen] = useState<boolean>(false);
   const [walkthroughStepIndex, setWalkthroughStepIndex] = useState<number>(0);
+  const [cloudSyncStatus, setCloudSyncStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const isJudgeDemoRef = useRef<boolean>(false);
   const realSnapshotRef = useRef<RealModeSnapshot | null>(null);
+  const activeAccountUidRef = useRef<string | null>(DEMO_FARMER_ACCOUNTS['demo-rafiq'].uid);
+  const hydratedAccountUidRef = useRef<string | null>(null);
 
   useEffect(() => {
     isJudgeDemoRef.current = isJudgeDemoActive;
   }, [isJudgeDemoActive]);
 
-  // Reload scoped chat history when switching farms in normal mode
-  useEffect(() => {
+  const applyFarmerState = useCallback((state: FarmerAppState) => {
+    setLang(state.lang);
+    setAllFarms(state.farms);
+    setCurrentFarm(state.currentFarm);
+    setAnimals(state.animals);
+    setFlocks(state.flocks);
+    setTasks(state.tasks);
+    setCareRecords(state.careRecords);
+    setHealthEvents(state.healthEvents);
+    setVetRequests(state.vetRequests);
+    setRegionalAlerts(state.regionalAlerts);
+    setWeather(state.weather);
+    setNotifications(state.notifications);
+    setAuditAnswers(state.auditAnswers);
+    setActions(state.actions);
+    setChatMessages(state.chatMessages);
+    setSmsPrefs(state.smsPrefs);
+    setInAppNotifications(state.inAppNotifications);
+    setBiosecurityRecords(state.biosecurityRecords);
+  }, []);
+
+  const resetDemoState = useCallback(() => {
+    setLang('bn');
+    setRole('farmer');
+    setAllFarms(INITIAL_DEMO_FARMS);
+    setCurrentFarm(INITIAL_DEMO_FARMS[0]);
+    setAnimals(INITIAL_ANIMALS);
+    setFlocks(INITIAL_FLOCKS);
+    setTasks(INITIAL_SCHEDULED_TASKS);
+    setCareRecords(INITIAL_CARE_RECORDS);
+    setHealthEvents(INITIAL_HEALTH_EVENTS);
+    setVetRequests(INITIAL_VET_REQUESTS);
+    setRegionalAlerts(INITIAL_REGIONAL_ALERTS);
+    setWeather(INITIAL_WEATHER_INFO);
+    setNotifications(INITIAL_NOTIFICATIONS);
+    setAuditAnswers(DEMO_CURRENT_AUDIT.answers);
+    setActions(DEMO_INITIAL_ACTIONS);
+    setChatMessages([DEFAULT_KHAMAR_BONDHU_WELCOME('bn')]);
+    setSmsPrefs({
+      phoneNumber: INITIAL_DEMO_FARMS[0].ownerPhone,
+      isPhoneVerified: false,
+      smsOptInConsent: false,
+      categories: { vaccinations: true, deworming: true, biosecurity: true, regionalAlerts: true, vetAppointments: true },
+      quietHoursEnabled: true,
+      quietHoursStart: '21:00',
+      quietHoursEnd: '06:00',
+      ivrVoiceInterest: false,
+      gatewayStatus: 'planned_demo',
+    });
+    setInAppNotifications(true);
+    setBiosecurityRecords({});
+    setIsDemoActive(true);
+  }, []);
+
+  const handleAccountChanged = useCallback((account: FarmerAccount) => {
     if (isJudgeDemoRef.current) return;
-    try {
-      const saved = localStorage.getItem(`${STORAGE_PREFIX}chat_${currentFarm.id}`);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setChatMessages(parsed);
-          return;
-        }
+    const accountChanged = activeAccountUidRef.current !== account.uid;
+    activeAccountUidRef.current = account.uid;
+    setCurrentUser(account);
+    setIsDemoActive(account.isDemo);
+    if (!accountChanged) return;
+
+    hydratedAccountUidRef.current = null;
+    setCloudSyncStatus('idle');
+    if (account.isDemo) {
+      resetDemoState();
+      return;
+    }
+    setRole('farmer');
+    applyFarmerState(createEmptyFarmerState(account));
+  }, [applyFarmerState, resetDemoState]);
+
+  useEffect(() => authService.subscribeToAuth(handleAccountChanged), [handleAccountChanged]);
+
+  const remoteAccountUid = currentUser && !currentUser.isDemo && !isDemoActive && !isJudgeDemoActive
+    ? currentUser.uid
+    : null;
+  const {
+    data: remoteFarmerState,
+    error: remoteFarmerStateError,
+    isLoading: isRemoteFarmerStateLoading,
+    mutate: mutateRemoteFarmerState,
+  } = useSWR<FarmerAppState | null>(
+    remoteAccountUid ? `private-farmer-state:${remoteAccountUid}` : null,
+    () => loadPrivateFarmerState<FarmerAppState>(),
+    { revalidateOnFocus: false, shouldRetryOnError: false, revalidateOnReconnect: true }
+  );
+
+  useEffect(() => {
+    if (!remoteAccountUid) return;
+    if (remoteFarmerStateError) {
+      setCloudSyncStatus('error');
+      return;
+    }
+    if (isRemoteFarmerStateLoading || remoteFarmerState === undefined) return;
+    if (hydratedAccountUidRef.current === remoteAccountUid) return;
+    const state = remoteFarmerState || createEmptyFarmerState(currentUser!);
+    applyFarmerState(state);
+    hydratedAccountUidRef.current = remoteAccountUid;
+    setCloudSyncStatus(remoteFarmerState ? 'saved' : 'idle');
+  }, [
+    remoteAccountUid,
+    remoteFarmerState,
+    remoteFarmerStateError,
+    isRemoteFarmerStateLoading,
+    currentUser,
+    applyFarmerState,
+  ]);
+
+  const farmerStateForStorage = useMemo<FarmerAppState>(() => ({
+    schemaVersion: 1,
+    lang,
+    farms: allFarms,
+    currentFarm,
+    animals,
+    flocks,
+    tasks,
+    careRecords,
+    healthEvents,
+    vetRequests,
+    regionalAlerts,
+    weather,
+    notifications,
+    auditAnswers,
+    actions,
+    chatMessages,
+    smsPrefs,
+    inAppNotifications,
+    biosecurityRecords,
+  }), [
+    lang, allFarms, currentFarm, animals, flocks, tasks, careRecords, healthEvents,
+    vetRequests, regionalAlerts, weather, notifications, auditAnswers, actions,
+    chatMessages, smsPrefs, inAppNotifications, biosecurityRecords,
+  ]);
+
+  useEffect(() => {
+    if (
+      !remoteAccountUid ||
+      isRemoteFarmerStateLoading ||
+      remoteFarmerStateError ||
+      hydratedAccountUidRef.current !== remoteAccountUid
+    ) return;
+
+    const timeoutId = window.setTimeout(async () => {
+      setCloudSyncStatus('saving');
+      try {
+        await savePrivateFarmerState(farmerStateForStorage);
+        hydratedAccountUidRef.current = remoteAccountUid;
+        setCloudSyncStatus('saved');
+        await mutateRemoteFarmerState(farmerStateForStorage, false);
+      } catch {
+        setCloudSyncStatus('error');
       }
-    } catch {}
-    setChatMessages([DEFAULT_KHAMAR_BONDHU_WELCOME(lang)]);
-  }, [currentFarm.id]);
+    }, 700);
 
-  // Persist chat history in normal mode only
-  useEffect(() => {
-    if (isJudgeDemoRef.current) return;
-    try {
-      localStorage.setItem(`${STORAGE_PREFIX}chat_${currentFarm.id}`, JSON.stringify(chatMessages));
-    } catch {}
-  }, [chatMessages, currentFarm.id]);
+    return () => window.clearTimeout(timeoutId);
+  }, [
+    remoteAccountUid,
+    isRemoteFarmerStateLoading,
+    remoteFarmerStateError,
+    farmerStateForStorage,
+    mutateRemoteFarmerState,
+  ]);
 
-  // Initialize biosecurity explanations for the active farm
   useEffect(() => {
     const res = generateAdaptiveActionPlan(currentFarm, auditAnswers, `audit_${currentFarm.id}`);
     setCriticalAlerts(res.criticalAlerts);
     setXRayExplanations(res.xRayExplanations);
-  }, [currentFarm.id]);
-
-  // Listen for real Firebase auth state and load user farms & notifications
-  useEffect(() => {
-    const unsubscribe = authService.subscribeToAuth(async (account) => {
-      if (isJudgeDemoRef.current) return;
-      if (account) {
-        setCurrentUser(account);
-        setIsDemoActive(account.isDemo);
-
-        try {
-          const userFarms = await farmService.listFarmsByOwner(account.uid);
-          if (userFarms.length > 0 && !isJudgeDemoRef.current) {
-            setAllFarms(userFarms);
-            setCurrentFarm((prev) => {
-              const matched = userFarms.find((f) => f.id === prev.id);
-              return matched || userFarms[0];
-            });
-          }
-        } catch (e) {
-          console.warn('Error loading farms for user:', e);
-        }
-
-        try {
-          const notifs = await notificationService.listNotifications(account.uid);
-          if (!isJudgeDemoRef.current) {
-            setNotifications(notifs);
-          }
-        } catch (e) {
-          console.warn('Error loading notifications:', e);
-        }
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const handleRefreshNotifications = async () => {
-    const uid = currentUser?.uid || currentFarm.ownerUid || 'demo_user_rafiq_001';
-    try {
-      const notifs = await notificationService.listNotifications(uid);
-      setNotifications(notifs);
-    } catch (e) {
-      console.warn('Error refreshing notifications:', e);
-    }
-  };
-
-  // Sync to localStorage (Paused during Judge Demo Mode so real user records are never overwritten)
-  useEffect(() => {
-    if (isJudgeDemoActive) return;
-    try {
-      localStorage.setItem(`${STORAGE_PREFIX}lang`, lang);
-      localStorage.setItem(`${STORAGE_PREFIX}current_farm`, JSON.stringify(currentFarm));
-      localStorage.setItem(`${STORAGE_PREFIX}all_farms`, JSON.stringify(allFarms));
-      localStorage.setItem(`${STORAGE_PREFIX}animals`, JSON.stringify(animals));
-      localStorage.setItem(`${STORAGE_PREFIX}flocks`, JSON.stringify(flocks));
-      localStorage.setItem(`${STORAGE_PREFIX}tasks`, JSON.stringify(tasks));
-      localStorage.setItem(`${STORAGE_PREFIX}care_records`, JSON.stringify(careRecords));
-      localStorage.setItem(`${STORAGE_PREFIX}health_events`, JSON.stringify(healthEvents));
-      localStorage.setItem(`${STORAGE_PREFIX}vet_requests`, JSON.stringify(vetRequests));
-      localStorage.setItem(`${STORAGE_PREFIX}notifications`, JSON.stringify(notifications));
-    } catch {}
-  }, [isJudgeDemoActive, lang, currentFarm, allFarms, animals, flocks, tasks, careRecords, healthEvents, vetRequests, notifications]);
+  }, [currentFarm, auditAnswers]);
 
   // Handlers
   const handleToggleLang = () => {
@@ -369,9 +387,11 @@ export default function App() {
 
   const handleActivateJudgeDemo = (startWalkthrough = false) => {
     if (!isJudgeDemoActive) {
-      const snapshot: RealModeSnapshot = {
+      realSnapshotRef.current = {
         currentUser,
         isDemoActive,
+        lang,
+        role,
         allFarms,
         currentFarm,
         animals,
@@ -380,21 +400,26 @@ export default function App() {
         careRecords,
         healthEvents,
         vetRequests,
+        regionalAlerts,
+        weather,
         notifications,
         auditAnswers,
         actions,
+        chatMessages,
+        smsPrefs,
+        inAppNotifications,
+        biosecurityRecords,
         currentScreen,
       };
-      realSnapshotRef.current = snapshot;
-      try {
-        localStorage.setItem(JUDGE_SNAPSHOT_STORAGE_KEY, JSON.stringify(snapshot));
-      } catch {}
     }
 
+    hydratedAccountUidRef.current = null;
     isJudgeDemoRef.current = true;
     setIsJudgeDemoActive(true);
     setCurrentUser(JUDGE_DEMO_ACCOUNT);
     setIsDemoActive(true);
+    setLang('bn');
+    setRole('farmer');
     setAllFarms([JUDGE_DEMO_FARM]);
     setCurrentFarm(JUDGE_DEMO_FARM);
     setAnimals(JUDGE_DEMO_ANIMALS);
@@ -404,60 +429,68 @@ export default function App() {
     setHealthEvents(JUDGE_DEMO_HEALTH_EVENTS);
     setVetRequests(JUDGE_DEMO_VET_REQUESTS);
     setRegionalAlerts(JUDGE_DEMO_ALERTS);
+    setWeather({ ...INITIAL_WEATHER_INFO, isSimulated: true });
     setNotifications(JUDGE_DEMO_NOTIFICATIONS);
     setAuditAnswers(JUDGE_DEMO_AUDIT_ANSWERS);
     setActions(JUDGE_DEMO_ACTIONS);
     setChatMessages(JUDGE_DEMO_CHAT_HISTORY);
+    setSmsPrefs({
+      phoneNumber: JUDGE_DEMO_FARM.ownerPhone,
+      isPhoneVerified: false,
+      smsOptInConsent: false,
+      categories: { vaccinations: true, deworming: true, biosecurity: true, regionalAlerts: true, vetAppointments: true },
+      quietHoursEnabled: true,
+      quietHoursStart: '21:00',
+      quietHoursEnd: '06:00',
+      ivrVoiceInterest: false,
+      gatewayStatus: 'planned_demo',
+    });
+    setInAppNotifications(true);
+    setBiosecurityRecords({});
     setWalkthroughStepIndex(0);
     setIsWalkthroughOpen(startWalkthrough);
     handleNavigate('dashboard');
   };
 
   const handleExitJudgeDemo = () => {
-    let snap = realSnapshotRef.current;
-    if (!snap) {
-      try {
-        const raw = localStorage.getItem(JUDGE_SNAPSHOT_STORAGE_KEY);
-        if (raw) snap = JSON.parse(raw);
-      } catch {}
-    }
-
+    const snapshot = realSnapshotRef.current;
     isJudgeDemoRef.current = false;
     setIsJudgeDemoActive(false);
     setIsWalkthroughOpen(false);
     setWalkthroughStepIndex(0);
 
-    if (snap) {
-      setCurrentUser(snap.currentUser);
-      setIsDemoActive(snap.isDemoActive);
-      setAllFarms(snap.allFarms);
-      setCurrentFarm(snap.currentFarm);
-      setAnimals(snap.animals);
-      setFlocks(snap.flocks);
-      setTasks(snap.tasks);
-      setCareRecords(snap.careRecords);
-      setHealthEvents(snap.healthEvents);
-      setVetRequests(snap.vetRequests);
-      setNotifications(snap.notifications);
-      setAuditAnswers(snap.auditAnswers);
-      setActions(snap.actions);
-      setRegionalAlerts(INITIAL_REGIONAL_ALERTS);
-      try {
-        const savedChat = localStorage.getItem(`${STORAGE_PREFIX}chat_${snap.currentFarm.id}`);
-        setChatMessages(savedChat ? JSON.parse(savedChat) : [DEFAULT_KHAMAR_BONDHU_WELCOME(lang)]);
-      } catch {
-        setChatMessages([DEFAULT_KHAMAR_BONDHU_WELCOME(lang)]);
-      }
-      handleNavigate(snap.currentScreen === 'ussd_simulator' ? 'dashboard' : snap.currentScreen);
+    if (snapshot) {
+      setCurrentUser(snapshot.currentUser);
+      setIsDemoActive(snapshot.isDemoActive);
+      setLang(snapshot.lang);
+      setRole(snapshot.role);
+      setAllFarms(snapshot.allFarms);
+      setCurrentFarm(snapshot.currentFarm);
+      setAnimals(snapshot.animals);
+      setFlocks(snapshot.flocks);
+      setTasks(snapshot.tasks);
+      setCareRecords(snapshot.careRecords);
+      setHealthEvents(snapshot.healthEvents);
+      setVetRequests(snapshot.vetRequests);
+      setRegionalAlerts(snapshot.regionalAlerts);
+      setWeather(snapshot.weather);
+      setNotifications(snapshot.notifications);
+      setAuditAnswers(snapshot.auditAnswers);
+      setActions(snapshot.actions);
+      setChatMessages(snapshot.chatMessages);
+      setSmsPrefs(snapshot.smsPrefs);
+      setInAppNotifications(snapshot.inAppNotifications);
+      setBiosecurityRecords(snapshot.biosecurityRecords);
+      activeAccountUidRef.current = snapshot.currentUser?.uid || null;
+      hydratedAccountUidRef.current =
+        snapshot.currentUser && !snapshot.currentUser.isDemo ? snapshot.currentUser.uid : null;
+      handleNavigate(snapshot.currentScreen === 'ussd_simulator' ? 'dashboard' : snapshot.currentScreen);
     } else {
-      setRegionalAlerts(INITIAL_REGIONAL_ALERTS);
+      resetDemoState();
       handleNavigate('dashboard');
     }
 
     realSnapshotRef.current = null;
-    try {
-      localStorage.removeItem(JUDGE_SNAPSHOT_STORAGE_KEY);
-    } catch {}
   };
 
   const handleSelectWalkthroughStep = (newIndex: number) => {
@@ -473,31 +506,20 @@ export default function App() {
   };
 
   const handleLaunchDemo = () => {
-    setAllFarms(INITIAL_DEMO_FARMS);
-    setCurrentFarm(INITIAL_DEMO_FARMS[0]);
-    setAnimals(INITIAL_ANIMALS);
-    setFlocks(INITIAL_FLOCKS);
-    setTasks(INITIAL_SCHEDULED_TASKS);
-    setCareRecords(INITIAL_CARE_RECORDS);
-    setHealthEvents(INITIAL_HEALTH_EVENTS);
-    setVetRequests(INITIAL_VET_REQUESTS);
-    setNotifications(INITIAL_NOTIFICATIONS);
-    setIsDemoActive(true);
+    resetDemoState();
     setCurrentScreen('dashboard');
+    handleAccountChanged(DEMO_FARMER_ACCOUNTS['demo-rafiq']);
+    void authService.selectDemoFarmer('demo-rafiq');
   };
 
   const handleResetDemo = () => {
-    localStorage.clear();
-    setAllFarms(INITIAL_DEMO_FARMS);
-    setCurrentFarm(INITIAL_DEMO_FARMS[0]);
-    setAnimals(INITIAL_ANIMALS.filter((a) => a.farmId === INITIAL_DEMO_FARMS[0].id));
-    setFlocks(INITIAL_FLOCKS.filter((f) => f.farmId === INITIAL_DEMO_FARMS[0].id));
-    setTasks(INITIAL_SCHEDULED_TASKS.filter((t) => t.farmId === INITIAL_DEMO_FARMS[0].id));
-    setCareRecords(INITIAL_CARE_RECORDS.filter((r) => r.farmId === INITIAL_DEMO_FARMS[0].id));
-    setHealthEvents(INITIAL_HEALTH_EVENTS.filter((e) => e.farmId === INITIAL_DEMO_FARMS[0].id));
-    setVetRequests([]);
-    setNotifications(INITIAL_NOTIFICATIONS);
-    setIsDemoActive(false);
+    if (currentUser && !currentUser.isDemo) {
+      applyFarmerState(createEmptyFarmerState(currentUser));
+      hydratedAccountUidRef.current = currentUser.uid;
+      setCloudSyncStatus('saving');
+    } else {
+      resetDemoState();
+    }
     setCurrentScreen('dashboard');
   };
 
@@ -506,15 +528,7 @@ export default function App() {
     const completionDateStr = new Date().toISOString().split('T')[0];
 
     if (completedTask) {
-      // 1. Persist through careService (which updates Firestore if real user)
-      const ownerUid = currentUser?.uid || currentFarm.ownerUid || 'demo_user_rafiq_001';
-      try {
-        await careService.completeTask(taskId, currentFarm.ownerName || 'খামারি নিজে');
-      } catch (e) {
-        console.warn('CareService completion warning:', e);
-      }
-
-      // 2. Create linked CareRecord so the animal/flock profile history immediately updates
+      // Create a linked care record so animal and flock histories update immediately.
       const newCareRec: CareRecord = {
         id: `care_rec_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
         farmId: completedTask.farmId,
@@ -563,9 +577,6 @@ export default function App() {
           status: 'upcoming',
         };
 
-        // If real user, save booster task to Firestore
-        careService.createTask(ownerUid, nextTask).catch(() => {});
-
         setTasks((prev) => [
           ...prev.map((t) =>
             t.id === taskId
@@ -586,58 +597,20 @@ export default function App() {
     }
   };
 
-  const handleAddAnimal = async (newAnimal: AnimalProfile) => {
-    const ownerUid = currentUser?.uid || currentFarm.ownerUid || 'demo_user_rafiq_001';
-    try {
-      await animalService.createAnimal(ownerUid, currentFarm.id, {
-        species: newAnimal.species,
-        animalName: newAnimal.nameOrTag,
-        breed: newAnimal.breed,
-        sex: newAnimal.sex,
-        estimatedAgeMonths: newAnimal.estimatedAgeMonths || 12,
-        tagNumber: newAnimal.tagNumber,
-        currentStatus: newAnimal.healthStatus === 'healthy' ? 'healthy' : 'needs_attention',
-        productionStage: newAnimal.productionStage,
-        notes: newAnimal.notes,
-      });
-    } catch (e) {
-      console.warn('Error saving animal to Firestore:', e);
-    }
-
+  const handleAddAnimal = (newAnimal: AnimalProfile) => {
     setAnimals((prev) => [newAnimal, ...prev]);
     // Automatically generate approved protocol care tasks for the animal
     const initialTasks = createInitialTasksForAnimal(newAnimal);
     if (initialTasks.length > 0) {
-      for (const t of initialTasks) {
-        careService.createTask(ownerUid, t).catch(() => {});
-      }
       setTasks((prev) => [...initialTasks, ...prev]);
     }
   };
 
-  const handleAddFlock = async (newFlock: FlockProfile) => {
-    const ownerUid = currentUser?.uid || currentFarm.ownerUid || 'demo_user_rafiq_001';
-    try {
-      await flockService.createFlock(ownerUid, currentFarm.id, {
-        poultryType: newFlock.poultryType,
-        batchName: newFlock.batchName,
-        initialBirdCount: newFlock.initialBirdCount,
-        placementDate: newFlock.placementDate,
-        housingType: newFlock.housingType,
-        sourceSupplier: newFlock.sourceSupplier,
-        notes: newFlock.notes,
-      });
-    } catch (e) {
-      console.warn('Error saving flock to Firestore:', e);
-    }
-
+  const handleAddFlock = (newFlock: FlockProfile) => {
     setFlocks((prev) => [newFlock, ...prev]);
     // Automatically generate approved protocol care tasks for the flock
     const initialTasks = createInitialTasksForFlock(newFlock);
     if (initialTasks.length > 0) {
-      for (const t of initialTasks) {
-        careService.createTask(ownerUid, t).catch(() => {});
-      }
       setTasks((prev) => [...initialTasks, ...prev]);
     }
   };
@@ -671,13 +644,10 @@ export default function App() {
     setVetRequests((prev) => [newReq, ...prev]);
   };
 
-  const handleMarkNotificationRead = async (id: string) => {
+  const handleMarkNotificationRead = (id: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, isRead: true, readTimestamp: new Date().toISOString() } : n))
     );
-    try {
-      await notificationService.markAsRead(id);
-    } catch (_) {}
   };
 
   // Cross-screen workflow navigators
@@ -769,6 +739,13 @@ export default function App() {
     setXRayExplanations(newExpls);
   };
 
+  const handleSaveBiosecurityChecklist = (record: BiosecurityChecklistRecord) => {
+    setBiosecurityRecords((previous) => ({
+      ...previous,
+      [`${record.farmId}_${record.date}`]: record,
+    }));
+  };
+
   const handleReviewHealthEvent = (eventId: string, notes: string) => {
     setHealthEvents((prev) =>
       prev.map((e) =>
@@ -811,7 +788,7 @@ export default function App() {
     isAuthModalOpen || isNotifCenterOpen || isCriticalModalOpen || isMobileMenuOpen;
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] text-[#0F172A] flex flex-col font-sans selection:bg-emerald-200">
+    <div className="min-h-screen bg-[#F7F9FC] text-[#0F172A] flex flex-col selection:bg-emerald-200">
       <JudgeWalkthroughOverlay
         lang={lang}
         isJudgeDemoActive={isJudgeDemoActive}
@@ -830,7 +807,9 @@ export default function App() {
         lang={lang}
         onToggleLang={handleToggleLang}
         role={role}
-        onChangeRole={setRole}
+        onChangeRole={(nextRole) => {
+          if (isDemoActive || isJudgeDemoActive) setRole(nextRole);
+        }}
         onLaunchDemo={handleLaunchDemo}
         onResetDemo={handleResetDemo}
         isDemoActive={isDemoActive}
@@ -858,6 +837,23 @@ export default function App() {
         />
 
         <main className="flex-1 p-3.5 sm:p-6 lg:p-8 min-w-0 pb-24 md:pb-12">
+          {!isDemoActive && !isJudgeDemoActive && cloudSyncStatus !== 'idle' && (
+            <div
+              aria-live="polite"
+              className={`mb-3 rounded-xl border px-3 py-2 text-xs font-semibold ${
+                cloudSyncStatus === 'error'
+                  ? 'border-rose-200 bg-rose-50 text-rose-800'
+                  : 'border-emerald-200 bg-emerald-50 text-emerald-800'
+              }`}
+              role={cloudSyncStatus === 'error' ? 'alert' : 'status'}
+            >
+              {cloudSyncStatus === 'error'
+                ? lang === 'bn' ? 'সর্বশেষ পরিবর্তন সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।' : 'The latest changes could not be saved. Try again.'
+                : cloudSyncStatus === 'saving'
+                  ? lang === 'bn' ? 'আপনার খামারের তথ্য নিরাপদে সংরক্ষণ হচ্ছে…' : 'Saving your farm data securely…'
+                  : lang === 'bn' ? 'আপনার খামারের তথ্য সংরক্ষিত।' : 'Your farm data is saved.'}
+            </div>
+          )}
           {currentScreen === 'dashboard' && (
             <DashboardScreen
               farm={currentFarm}
@@ -897,6 +893,7 @@ export default function App() {
               scheduledTasks={farmTasks}
               healthEvents={farmHealthEvents}
               lang={lang}
+              isDemoActive={isDemoActive}
               onAddAnimal={handleAddAnimal}
               onAddFlock={handleAddFlock}
               onRecordMortality={handleRecordMortality}
@@ -951,6 +948,7 @@ export default function App() {
               onUpdateChatMessages={setChatMessages}
               onResetChatMessages={() => setChatMessages([DEFAULT_KHAMAR_BONDHU_WELCOME(lang)])}
               isJudgeDemoActive={isJudgeDemoActive}
+              isDemoActive={isDemoActive}
             />
           )}
 
@@ -967,6 +965,8 @@ export default function App() {
             <BiosecurityModuleScreen
               farm={currentFarm}
               ownerUid={currentUser?.uid || currentFarm.ownerUid || 'demo_user'}
+              records={biosecurityRecords}
+              onSaveChecklist={handleSaveBiosecurityChecklist}
               lang={lang}
               answers={auditAnswers}
               onAnswer={handleAuditAnswer}
@@ -1036,6 +1036,10 @@ export default function App() {
               lang={lang}
               onLanguageChange={setLang}
               farm={currentFarm}
+              smsPrefs={smsPrefs}
+              onSmsPrefsChange={setSmsPrefs}
+              inAppNotifications={inAppNotifications}
+              onInAppNotificationsChange={setInAppNotifications}
               isDemoActive={isDemoActive}
               onLaunchDemo={handleLaunchDemo}
               onResetAllData={handleResetDemo}
@@ -1061,16 +1065,13 @@ export default function App() {
         }}
       />
 
-      {/* Farmer Account Modal (Real Firebase Auth & Switch Demo) */}
+      {/* Farmer Account Modal (Mobile Password Auth & Demo Switch) */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         currentUser={currentUser}
         lang={lang}
-        onUserChanged={(user) => {
-          setCurrentUser(user);
-          setIsDemoActive(user.isDemo);
-        }}
+        onUserChanged={handleAccountChanged}
       />
 
       {/* Farm Notification Center Modal */}
@@ -1078,9 +1079,8 @@ export default function App() {
         isOpen={isNotifCenterOpen}
         onClose={() => setIsNotifCenterOpen(false)}
         notifications={notifications}
-        ownerUid={currentUser?.uid || currentFarm.ownerUid || 'demo_user_rafiq_001'}
         lang={lang}
-        onRefreshNotifications={handleRefreshNotifications}
+        onMarkRead={handleMarkNotificationRead}
         onNavigate={handleNavigate}
         completedTaskIds={completedTaskIds}
       />

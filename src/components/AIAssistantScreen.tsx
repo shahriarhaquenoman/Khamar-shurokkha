@@ -25,6 +25,7 @@ import {
   getKhamarUssdShortLabel,
 } from '../config/contactConfig';
 import { KhamarContactCallAction } from './ui/KhamarContactCallAction';
+import { askGeminiFarmQuestion } from '../lib/farmerApi';
 
 interface AIAssistantScreenProps {
   farm: FarmProfile;
@@ -36,6 +37,7 @@ interface AIAssistantScreenProps {
   messages?: KhamarBondhuMessage[];
   onUpdateMessages?: React.Dispatch<React.SetStateAction<KhamarBondhuMessage[]>>;
   onResetMessages?: () => void;
+  isDemoActive: boolean;
   isJudgeDemoActive?: boolean;
 }
 
@@ -59,6 +61,7 @@ export const AIAssistantScreen: React.FC<AIAssistantScreenProps> = ({
   messages: sharedMessages,
   onUpdateMessages,
   onResetMessages,
+  isDemoActive,
   isJudgeDemoActive = false,
 }) => {
   const isBn = lang === 'bn';
@@ -75,6 +78,7 @@ export const AIAssistantScreen: React.FC<AIAssistantScreenProps> = ({
 
   const [inputQuery, setInputQuery] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -111,8 +115,8 @@ export const AIAssistantScreen: React.FC<AIAssistantScreenProps> = ({
   const currentFlock = flocks.find((f) => f.id === activeTargetId);
 
   const handleSendMessage = (textToSend?: string) => {
-    const query = textToSend || inputQuery;
-    if (!query.trim()) return;
+    const query = (textToSend || inputQuery).trim();
+    if (!query || isGenerating) return;
 
     const userMsg: KhamarBondhuMessage = {
       id: `usr_${Date.now()}`,
@@ -121,8 +125,48 @@ export const AIAssistantScreen: React.FC<AIAssistantScreenProps> = ({
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
+    const conversation = [...messages, userMsg];
     setMessages((prev) => [...prev, userMsg]);
     setInputQuery('');
+
+    if (!isDemoActive && !isJudgeDemoActive) {
+      setIsGenerating(true);
+      void askGeminiFarmQuestion(
+        conversation,
+        {
+          district: farm.district,
+          upazila: farm.upazila,
+          animals,
+          flocks,
+        },
+        lang
+      )
+        .then((result) => {
+          const botMsg: KhamarBondhuMessage = {
+            id: `bot_${Date.now()}`,
+            sender: 'assistant',
+            text: result.text,
+            isEmergencyAlert: result.isEmergencyAlert,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          };
+          setMessages((previous) => [...previous, botMsg]);
+        })
+        .catch(() => {
+          setMessages((previous) => [
+            ...previous,
+            {
+              id: `bot_error_${Date.now()}`,
+              sender: 'assistant',
+              text: isBn
+                ? 'দুঃখিত, এই মুহূর্তে উত্তর পাওয়া যাচ্ছে না। জরুরি লক্ষণ থাকলে সরাসরি পশুচিকিৎসকের সঙ্গে যোগাযোগ করুন।'
+                : 'Sorry, the assistant is unavailable right now. Contact a veterinarian directly for urgent symptoms.',
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            },
+          ]);
+        })
+        .finally(() => setIsGenerating(false));
+      return;
+    }
 
     setTimeout(() => {
       const lower = query.toLowerCase();
@@ -199,19 +243,24 @@ export const AIAssistantScreen: React.FC<AIAssistantScreenProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Honest Pre-set Demo Guidance Disclosure */}
-      <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-amber-950 flex items-start gap-3">
-        <Info className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+      <div className={`p-4 rounded-2xl border text-xs flex items-start gap-3 ${isDemoActive || isJudgeDemoActive ? 'bg-amber-50 border-amber-200 text-amber-950' : 'bg-emerald-50 border-emerald-200 text-emerald-950'}`}>
+        <Info className={`w-5 h-5 shrink-0 mt-0.5 ${isDemoActive || isJudgeDemoActive ? 'text-amber-700' : 'text-emerald-700'}`} />
         <div className="space-y-1">
-          <p className="font-black text-amber-950">
-            {isBn
-              ? `ডেমো / প্রি-সেট শিক্ষামূলক সহায়িকা (কোনো লাইভ AI বা ডাক্তার নয়)${isJudgeDemoActive ? ' — বিচারক ডেমো' : ''}`
-              : `Demo / Pre-Set Educational Guide (No Live AI API or Vet Diagnosis)${isJudgeDemoActive ? ' — Judge Demo' : ''}`}
+          <p className="font-black">
+            {isDemoActive || isJudgeDemoActive
+              ? isBn
+                ? `ডেমো শিক্ষামূলক সহায়িকা (লাইভ AI নয়)${isJudgeDemoActive ? ' — বিচারক ডেমো' : ''}`
+                : `Demo educational guide (not live AI)${isJudgeDemoActive ? ' — Judge Demo' : ''}`
+              : isBn ? 'লাইভ Gemini সহায়িকা · পশুচিকিৎসকের বিকল্প নয়' : 'Live Gemini guidance · not a substitute for a veterinarian'}
           </p>
-          <p className="leading-relaxed text-amber-900">
-            {isBn
-              ? `খামার বন্ধু সাধারণ খামার পরিচর্যা ও সচেতনতামূলক তথ্য দিতে পারে। এটি এখনো নিবন্ধিত পশুচিকিৎসকের বিকল্প নয়। অসুস্থ প্রাণীর জন্য পশুচিকিৎসা সেবা অথবা খামার সুরক্ষা সহায়তা নম্বর (${getKhamarPhoneShortLabel(lang)}) ও USSD (${getKhamarUssdShortLabel()}) ব্যবহার করুন।`
-              : `Khamar Bondhu provides general farm-care and awareness information only and is not a substitute for a registered veterinarian. Use Veterinary Care or Khamar Shurokkha support (${getKhamarPhoneShortLabel(lang)}) / USSD (${getKhamarUssdShortLabel()}) for sick animals.`}
+          <p className="leading-relaxed">
+            {isDemoActive || isJudgeDemoActive
+              ? isBn
+                ? `ডেমো উত্তরগুলো পূর্বনির্ধারিত। নিবন্ধিত অ্যাকাউন্টে Gemini উত্তর দেয়। জরুরি লক্ষণে পশুচিকিৎসকের সঙ্গে যোগাযোগ করুন (${getKhamarPhoneShortLabel(lang)}).`
+                : `Demo replies are preset. Sign in to use Gemini. Contact a veterinarian for urgent symptoms (${getKhamarPhoneShortLabel(lang)}).`
+              : isBn
+                ? `আপনার প্রশ্ন ও সীমিত খামার প্রসঙ্গ Google Gemini-তে পাঠানো হয়। এটি রোগ নির্ণয় বা ওষুধের মাত্রা দেয় না। জরুরি লক্ষণে পশুচিকিৎসকের সঙ্গে যোগাযোগ করুন (${getKhamarPhoneShortLabel(lang)}).`
+                : `Your question and limited farm context are sent to Google Gemini. It does not diagnose or prescribe medicines. Contact a veterinarian for urgent symptoms (${getKhamarPhoneShortLabel(lang)}).`}
           </p>
         </div>
       </div>
@@ -354,6 +403,11 @@ export const AIAssistantScreen: React.FC<AIAssistantScreenProps> = ({
               </div>
             </div>
           ))}
+          {isGenerating && (
+            <div aria-live="polite" className="text-xs font-semibold text-slate-500" role="status">
+              {isBn ? 'খামার বন্ধু উত্তর তৈরি করছে…' : 'Gemini is preparing a reply…'}
+            </div>
+          )}
           <div ref={chatEndRef} />
         </div>
 
@@ -363,7 +417,8 @@ export const AIAssistantScreen: React.FC<AIAssistantScreenProps> = ({
             <button
               key={idx}
               onClick={() => handleSendMessage(isBn ? q.bn : q.en)}
-              className="min-h-[38px] px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 text-slate-800 font-bold text-xs shrink-0 cursor-pointer"
+              disabled={isGenerating}
+              className="min-h-[38px] px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 text-slate-800 font-bold text-xs shrink-0 cursor-pointer disabled:opacity-50"
             >
               {isBn ? q.bn : q.en}
             </button>
@@ -383,12 +438,18 @@ export const AIAssistantScreen: React.FC<AIAssistantScreenProps> = ({
               type="text"
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' && (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229)) {
+                  event.preventDefault();
+                }
+              }}
+              disabled={isGenerating}
               placeholder={isBn ? 'এখানে আপনার প্রশ্ন লিখুন...' : 'Type your question here...'}
               className="flex-1 min-h-[46px] px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-emerald-600 outline-none"
             />
             <button
               type="submit"
-              disabled={!inputQuery.trim()}
+              disabled={!inputQuery.trim() || isGenerating}
               className="min-w-[46px] min-h-[46px] p-3 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-40 text-white rounded-xl flex items-center justify-center shrink-0 cursor-pointer"
             >
               <Send className="w-5 h-5" />
