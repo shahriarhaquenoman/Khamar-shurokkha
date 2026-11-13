@@ -120,11 +120,10 @@ export default function App() {
   const [knowledgeTopicKey, setKnowledgeTopicKey] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDemoActive, setIsDemoActive] = useState<boolean>(true);
+  const [authReady, setAuthReady] = useState(false);
 
   // User Authentication & Backend State
-  const [currentUser, setCurrentUser] = useState<FarmerAccount | null>(() => {
-    return DEMO_FARMER_ACCOUNTS['demo-rafiq'];
-  });
+  const [currentUser, setCurrentUser] = useState<FarmerAccount | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isNotifCenterOpen, setIsNotifCenterOpen] = useState(false);
 
@@ -187,7 +186,7 @@ export default function App() {
   const [cloudSyncStatus, setCloudSyncStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const isJudgeDemoRef = useRef<boolean>(false);
   const realSnapshotRef = useRef<RealModeSnapshot | null>(null);
-  const activeAccountUidRef = useRef<string | null>(DEMO_FARMER_ACCOUNTS['demo-rafiq'].uid);
+  const activeAccountUidRef = useRef<string | null>(null);
   const hydratedAccountUidRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -248,17 +247,19 @@ export default function App() {
     setIsDemoActive(true);
   }, []);
 
-  const handleAccountChanged = useCallback((account: FarmerAccount) => {
+  const handleAccountChanged = useCallback((account: FarmerAccount | null) => {
     if (isJudgeDemoRef.current) return;
-    const accountChanged = activeAccountUidRef.current !== account.uid;
-    activeAccountUidRef.current = account.uid;
+    const nextAccountUid = account?.uid ?? null;
+    const accountChanged = activeAccountUidRef.current !== nextAccountUid;
+    activeAccountUidRef.current = nextAccountUid;
     setCurrentUser(account);
-    setIsDemoActive(account.isDemo);
+    setIsDemoActive(account?.isDemo ?? false);
+    setAuthReady(true);
     if (!accountChanged) return;
 
     hydratedAccountUidRef.current = null;
     setCloudSyncStatus('idle');
-    if (account.isDemo) {
+    if (!account || account.isDemo) {
       resetDemoState();
       return;
     }
@@ -786,6 +787,53 @@ export default function App() {
 
   const hasBlockingOverlayOpen =
     isAuthModalOpen || isNotifCenterOpen || isCriticalModalOpen || isMobileMenuOpen;
+
+  if (!authReady) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-slate-950 p-6 text-white">
+        <div aria-live="polite" className="flex items-center gap-3 text-sm font-semibold" role="status">
+          <span aria-hidden="true" className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-emerald-400" />
+          {lang === 'bn' ? 'আপনার অ্যাকাউন্ট যাচাই হচ্ছে…' : 'Checking your account…'}
+        </div>
+      </main>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <AuthModal
+        fullScreen
+        isOpen
+        onClose={() => undefined}
+        currentUser={null}
+        lang={lang}
+        onUserChanged={handleAccountChanged}
+      />
+    );
+  }
+
+  if (!currentUser.isDemo && hydratedAccountUidRef.current !== currentUser.uid) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-slate-950 p-6 text-white">
+        <div className="max-w-sm text-center">
+          <p aria-live="polite" className="text-sm font-semibold" role={remoteFarmerStateError ? 'alert' : 'status'}>
+            {remoteFarmerStateError
+              ? lang === 'bn' ? 'আপনার খামারের তথ্য লোড করা যায়নি। আবার চেষ্টা করুন।' : 'Your farm data could not be loaded. Please try again.'
+              : lang === 'bn' ? 'আপনার খামারের তথ্য লোড হচ্ছে…' : 'Loading your farm data…'}
+          </p>
+          {remoteFarmerStateError && (
+            <button
+              className="mt-4 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-emerald-500"
+              onClick={() => void mutateRemoteFarmerState()}
+              type="button"
+            >
+              {lang === 'bn' ? 'আবার চেষ্টা করুন' : 'Try again'}
+            </button>
+          )}
+        </div>
+      </main>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F7F9FC] text-[#0F172A] flex flex-col selection:bg-emerald-200">

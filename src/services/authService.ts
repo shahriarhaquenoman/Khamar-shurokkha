@@ -60,13 +60,9 @@ async function responseError(response: Response): Promise<Error> {
 }
 
 export const authService = {
-  subscribeToAuth(callback: (user: FarmerAccount) => void): () => void {
+  subscribeToAuth(callback: (user: FarmerAccount | null) => void): () => void {
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-      callback(
-        session?.user
-          ? toFarmerAccount(session.user)
-          : DEMO_FARMER_ACCOUNTS['demo-rafiq']
-      );
+      callback(session?.user ? toFarmerAccount(session.user) : null);
     });
     return () => data.subscription.unsubscribe();
   },

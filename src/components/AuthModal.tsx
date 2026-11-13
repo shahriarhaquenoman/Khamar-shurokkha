@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Lock, LogOut, Phone, Shield, User, X } from 'lucide-react';
 import { Language } from '../types';
-import { FarmerAccount, authService, DEMO_FARMER_ACCOUNTS } from '../services/authService';
+import { FarmerAccount, authService } from '../services/authService';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentUser: FarmerAccount | null;
   lang: Language;
-  onUserChanged: (user: FarmerAccount) => void;
+  onUserChanged: (user: FarmerAccount | null) => void;
+  fullScreen?: boolean;
 }
 
 function keepImeComposition(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -26,9 +27,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   currentUser,
   lang,
   onUserChanged,
+  fullScreen = false,
 }) => {
   const isBn = lang === 'bn';
-  const [authMode, setAuthMode] = useState<'sign-in' | 'sign-up'>('sign-in');
+  const [authMode, setAuthMode] = useState<'sign-in' | 'sign-up'>('sign-up');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -38,7 +40,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   useEffect(() => {
     if (!isOpen) return;
-    setAuthMode('sign-in');
+    setAuthMode(currentUser ? 'sign-in' : 'sign-up');
     setName('');
     setPhone(currentUser?.isDemo ? '' : currentUser?.phoneNumber || '');
     setPassword('');
@@ -74,7 +76,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setErrorMessage('');
     try {
       await authService.signOut();
-      onUserChanged(DEMO_FARMER_ACCOUNTS['demo-rafiq']);
+      onUserChanged(null);
       onClose();
     } catch {
       setErrorMessage(isBn ? 'লগআউট করা যায়নি। আবার চেষ্টা করুন।' : 'Sign out could not be completed.');
@@ -86,11 +88,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-3 backdrop-blur-xs animate-in fade-in duration-150">
+    <div className={fullScreen
+      ? 'fixed inset-0 z-50 flex min-h-screen items-center justify-center gap-10 overflow-y-auto bg-slate-950 px-4 py-3 text-slate-900 sm:px-8 sm:py-5 lg:bg-gradient-to-br lg:from-emerald-950 lg:via-slate-950 lg:to-slate-900'
+      : 'fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-3 backdrop-blur-xs animate-in fade-in duration-150'}>
+      {fullScreen && (
+        <aside aria-label={isBn ? 'খামার সুরক্ষা পরিচিতি' : 'About Khamar Shurokkha'} className="hidden max-w-md flex-col gap-8 text-white lg:flex">
+          <div>
+            <p className="mb-3 text-sm font-bold tracking-[0.2em] text-emerald-300">KHAMAR SHUROKKHA</p>
+            <h1 className="text-4xl font-black leading-tight xl:text-5xl">
+              {isBn ? 'আপনার খামারের যত্ন—এক জায়গায়' : 'Care for your farm, all in one place'}
+            </h1>
+            <p className="mt-4 max-w-sm text-base leading-7 text-slate-300">
+              {isBn ? 'অ্যাকাউন্ট তৈরি করে আপনার খামারের প্রয়োজনীয় সব টুল ব্যবহার শুরু করুন।' : 'Create your account to access the tools and guidance your farm needs.'}
+            </p>
+          </div>
+          <ul className="flex flex-col gap-4 text-sm text-slate-200">
+            <li className="flex items-center gap-3"><span aria-hidden="true" className="h-2 w-2 rounded-full bg-emerald-400" />{isBn ? 'প্রাণী ও খামারের রেকর্ড' : 'Farm and animal records'}</li>
+            <li className="flex items-center gap-3"><span aria-hidden="true" className="h-2 w-2 rounded-full bg-emerald-400" />{isBn ? 'স্বাস্থ্য পরিকল্পনা ও ভেট সহায়তা' : 'Health planning and veterinary support'}</li>
+            <li className="flex items-center gap-3"><span aria-hidden="true" className="h-2 w-2 rounded-full bg-emerald-400" />{isBn ? 'আপনার খামারের জন্য AI পরামর্শ' : 'AI guidance tailored to your farm'}</li>
+          </ul>
+        </aside>
+      )}
       <section
         aria-labelledby="farmer-account-title"
         aria-modal="true"
-        className="flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl"
+        className={`flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl ${fullScreen ? 'max-h-[calc(100vh-3rem)]' : ''}`}
         role="dialog"
       >
         <header className="flex items-center justify-between border-b border-slate-100 bg-slate-900 p-4 text-white sm:p-5">
@@ -100,23 +122,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
             <div>
               <h2 className="text-base font-black sm:text-lg" id="farmer-account-title">
-                {isBn ? 'খামারি অ্যাকাউন্ট' : 'Farmer account'}
+                {currentUser ? isBn ? 'খামারি অ্যাকাউন্ট' : 'Farmer account' : authMode === 'sign-up'
+                  ? isBn ? 'নতুন খামারি অ্যাকাউন্ট' : 'Create your farmer account'
+                  : isBn ? 'লগইন করুন' : 'Sign in to your account'}
               </h2>
               <p className="text-xs text-slate-300">
-                {currentUser?.isDemo
-                  ? isBn ? 'নিজের খামার তথ্য সংরক্ষণে অ্যাকাউন্ট তৈরি করুন' : 'Create an account to save your farm data'
-                  : isBn ? 'আপনার ব্যক্তিগত খামার তথ্য' : 'Your private farm data'}
+                {currentUser
+                  ? isBn ? 'আপনার ব্যক্তিগত খামার তথ্য' : 'Your private farm data'
+                  : authMode === 'sign-up'
+                    ? isBn ? 'আপনার খামারের সব সুবিধা পেতে সাইন আপ করুন' : 'Sign up to unlock all your farm features'
+                    : isBn ? 'আপনার অ্যাকাউন্টে প্রবেশ করুন' : 'Welcome back to your farm'}
               </p>
             </div>
           </div>
-          <button
-            aria-label={isBn ? 'বন্ধ করুন' : 'Close'}
-            className="rounded-full p-1.5 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
-            onClick={onClose}
-            type="button"
-          >
-            <X aria-hidden="true" className="h-5 w-5" />
-          </button>
+          {!fullScreen && (
+            <button
+              aria-label={isBn ? 'বন্ধ করুন' : 'Close'}
+              className="rounded-full p-1.5 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
+              onClick={onClose}
+              type="button"
+            >
+              <X aria-hidden="true" className="h-5 w-5" />
+            </button>
+          )}
         </header>
 
 
@@ -131,9 +159,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <div className="flex items-start gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-950">
                 <Shield aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />
                 <span>
-                  {isBn
-                    ? 'মোবাইল নম্বর ও পাসওয়ার্ড দিয়ে লগইন করুন। OTP নেই; তাই ফোন নম্বরের মালিকানা যাচাই হয় না এবং পাসওয়ার্ড ভুলে গেলে অ্যাকাউন্ট ফেরত পাওয়ার ব্যবস্থা নেই।'
-                    : 'Use a mobile number and password. There is no OTP, so phone ownership is not verified and password recovery is unavailable.'}
+                  {fullScreen
+                    ? isBn
+                      ? 'SMS যাচাই বা পাসওয়ার্ড পুনরুদ্ধারের সুবিধা নেই। নিজের নম্বর ব্যবহার করে পাসওয়ার্ড মনে রাখুন।'
+                      : 'No SMS verification or password recovery. Use your own number and keep your password safe.'
+                    : isBn
+                      ? 'মোবাইল নম্বর ও পাসওয়ার্ড দিয়ে লগইন করুন। OTP নেই; তাই ফোন নম্বরের মালিকানা যাচাই হয় না এবং পাসওয়ার্ড ভুলে গেলে অ্যাকাউন্ট ফেরত পাওয়ার ব্যবস্থা নেই।'
+                      : 'Use a mobile number and password. There is no OTP, so phone ownership is not verified and password recovery is unavailable.'}
                 </span>
               </div>
 
@@ -156,7 +188,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </button>
               </div>
 
-              <form className="space-y-3.5" onSubmit={(event) => void handleSubmit(event)}>
+              <form className={fullScreen ? 'space-y-2.5' : 'space-y-3.5'} onSubmit={(event) => void handleSubmit(event)}>
                 {authMode === 'sign-up' && (
                   <div>
                     <label className="mb-1 block text-xs font-bold text-slate-700" htmlFor="farmer-name">
@@ -166,7 +198,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       <User aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                       <input
                         autoComplete="name"
-                        className="w-full rounded-xl border border-slate-300 py-2.5 pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className={`w-full rounded-xl border border-slate-300 ${fullScreen ? 'py-2' : 'py-2.5'} pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500`}
                         id="farmer-name"
                         maxLength={80}
                         onChange={(event) => setName(event.target.value)}
@@ -187,7 +219,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <Phone aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input
                       autoComplete="tel"
-                      className="w-full rounded-xl border border-slate-300 py-2.5 pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className={`w-full rounded-xl border border-slate-300 ${fullScreen ? 'py-2' : 'py-2.5'} pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500`}
                       id="farmer-phone"
                       inputMode="tel"
                       onChange={(event) => setPhone(event.target.value)}
@@ -208,7 +240,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <Lock aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input
                       autoComplete={authMode === 'sign-up' ? 'new-password' : 'current-password'}
-                      className="w-full rounded-xl border border-slate-300 py-2.5 pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className={`w-full rounded-xl border border-slate-300 ${fullScreen ? 'py-2' : 'py-2.5'} pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500`}
                       id="farmer-password"
                       minLength={authMode === 'sign-up' ? 10 : undefined}
                       onChange={(event) => setPassword(event.target.value)}
@@ -259,7 +291,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </form>
           </div>
 
-          {!currentUser?.isDemo && (
+          {currentUser && !currentUser.isDemo && (
             <div className="flex justify-end border-t border-slate-100 pt-3">
               <button
                 className="flex items-center gap-1.5 text-xs font-bold text-rose-700 hover:text-rose-800 disabled:opacity-50"
