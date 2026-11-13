@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, CheckCircle2, Info, Lock, LogOut, Phone, Shield, User, X } from 'lucide-react';
+import { ArrowRight, Lock, LogOut, Phone, Shield, User, X } from 'lucide-react';
 import { Language } from '../types';
 import { FarmerAccount, authService, DEMO_FARMER_ACCOUNTS } from '../services/authService';
 
@@ -28,7 +28,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onUserChanged,
 }) => {
   const isBn = lang === 'bn';
-  const [mode, setMode] = useState<'demo' | 'real'>(currentUser?.isDemo ? 'demo' : 'real');
   const [authMode, setAuthMode] = useState<'sign-in' | 'sign-up'>('sign-in');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -39,7 +38,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   useEffect(() => {
     if (!isOpen) return;
-    setMode(currentUser?.isDemo ? 'demo' : 'real');
     setAuthMode('sign-in');
     setName('');
     setPhone(currentUser?.isDemo ? '' : currentUser?.phoneNumber || '');
@@ -47,20 +45,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setPreferredLanguage(currentUser?.preferredLanguage || lang);
     setErrorMessage('');
   }, [isOpen, currentUser?.uid, currentUser?.isDemo, currentUser?.phoneNumber, currentUser?.preferredLanguage, lang]);
-
-  const handleSelectDemo = async (demoKey: 'demo-rafiq' | 'demo-fatema') => {
-    setLoading(true);
-    setErrorMessage('');
-    try {
-      const account = await authService.selectDemoFarmer(demoKey);
-      onUserChanged(account);
-      onClose();
-    } catch {
-      setErrorMessage(isBn ? 'ডেমো অ্যাকাউন্ট চালু করা যায়নি।' : 'The demo account could not be opened.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -120,7 +104,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </h2>
               <p className="text-xs text-slate-300">
                 {currentUser?.isDemo
-                  ? isBn ? 'বর্তমানে ডেমো মোডে আছেন' : 'Currently using demo mode'
+                  ? isBn ? 'নিজের খামার তথ্য সংরক্ষণে অ্যাকাউন্ট তৈরি করুন' : 'Create an account to save your farm data'
                   : isBn ? 'আপনার ব্যক্তিগত খামার তথ্য' : 'Your private farm data'}
               </p>
             </div>
@@ -135,24 +119,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </button>
         </header>
 
-        <div className="flex gap-2 border-b border-slate-200 bg-slate-100 p-3">
-          <button
-            aria-pressed={mode === 'demo'}
-            className={`min-h-10 flex-1 rounded-xl px-2 py-2 text-xs font-bold transition-all ${mode === 'demo' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
-            onClick={() => { setMode('demo'); setErrorMessage(''); }}
-            type="button"
-          >
-            {isBn ? 'ডেমো খামারি' : 'Demo profiles'}
-          </button>
-          <button
-            aria-pressed={mode === 'real'}
-            className={`min-h-10 flex-1 rounded-xl px-2 py-2 text-xs font-bold transition-all ${mode === 'real' ? 'bg-emerald-800 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
-            onClick={() => { setMode('real'); setErrorMessage(''); }}
-            type="button"
-          >
-            {isBn ? 'মোবাইল অ্যাকাউন্ট' : 'Mobile account'}
-          </button>
-        </div>
 
         <div className="flex-1 space-y-4 overflow-y-auto p-5">
           {errorMessage && (
@@ -161,46 +127,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           )}
 
-          {mode === 'demo' ? (
-            <div className="space-y-3">
-              <div className="flex items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-950">
-                <Info aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
-                <span>
-                  {isBn
-                    ? 'পর্যালোচনার জন্য প্রস্তুত নমুনা তথ্য। ডেমো পরিবর্তন আপনার ব্যক্তিগত অ্যাকাউন্টে সংরক্ষিত হয় না।'
-                    : 'Sample profiles for review. Changes made in demo mode are not saved to a personal account.'}
-                </span>
-              </div>
-
-              {([
-                ['demo-rafiq', 'মোঃ রফিকুল ইসলাম', 'গ্রিন ভ্যালি ইন্টিগ্রেটেড ফার্ম · হবিগঞ্জ'],
-                ['demo-fatema', 'মোছাঃ ফাতেমা বেগম', 'সোনার বাংলা খামার · শেরপুর'],
-              ] as const).map(([demoKey, displayName, description]) => {
-                const account = DEMO_FARMER_ACCOUNTS[demoKey];
-                const selected = currentUser?.uid === account.uid;
-                return (
-                  <button
-                    aria-pressed={selected}
-                    className={`flex min-h-20 w-full items-center justify-between rounded-2xl border-2 p-4 text-left transition-all ${selected ? 'border-emerald-600 bg-emerald-50/70' : 'border-slate-200 hover:border-slate-300'}`}
-                    disabled={loading}
-                    key={demoKey}
-                    onClick={() => void handleSelectDemo(demoKey)}
-                    type="button"
-                  >
-                    <span>
-                      <span className="flex items-center gap-2 font-bold text-sm text-slate-900">
-                        {displayName}
-                        <span className="rounded-full border border-amber-300 bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-900">DEMO</span>
-                      </span>
-                      <span className="mt-1 block text-xs text-slate-500">{description}</span>
-                    </span>
-                    {selected && <CheckCircle2 aria-hidden="true" className="h-5 w-5 shrink-0 text-emerald-600" />}
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <>
+          <div className="space-y-4">
               <div className="flex items-start gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-950">
                 <Shield aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />
                 <span>
@@ -330,8 +257,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <ArrowRight aria-hidden="true" className="h-4 w-4" />
                 </button>
               </form>
-            </>
-          )}
+          </div>
 
           {!currentUser?.isDemo && (
             <div className="flex justify-end border-t border-slate-100 pt-3">
