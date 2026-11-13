@@ -271,9 +271,11 @@ async function generateFarmGuidance(messages: Array<{ sender: 'user' | 'assistan
   ].join('\n');
   const { GoogleGenAI } = await import('@google/genai');
   const ai = new GoogleGenAI({ apiKey });
+  const firstUserIndex = messages.findIndex((message) => message.sender === 'user');
+  const conversation = messages.slice(firstUserIndex);
   const response = await ai.models.generateContent({
-    model: 'gemini-3.8-flash',
-    contents: messages.map((message) => ({
+    model: 'gemini-3.1-flash-lite',
+    contents: conversation.map((message) => ({
       role: message.sender === 'assistant' ? 'model' : 'user',
       parts: [{ text: message.text }],
     })),
